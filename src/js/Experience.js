@@ -23,6 +23,10 @@ const mousePos = {
   y: 0,
 };
 
+let shiftTop = 0;
+let scrollTop = 0;
+let scrollTopDelayed = 0;
+
 /**
  * Base
  */
@@ -70,10 +74,11 @@ window.addEventListener("resize", () => {
 });
 
 window.addEventListener("scroll", (e) => {
-  currentImg = Math.trunc(window.scrollY / window.innerHeight);
+  scrollTop = window.scrollY;
+  currentImg = Math.trunc(scrollTop / window.innerHeight);
   // console.log(currentImg);
-  // console.log(cameraZOffset + -1 * (window.scrollY / window.innerHeight));
-  cameraZPosition = cameraZOffset + -1 * (window.scrollY / window.innerHeight);
+  // console.log(cameraZOffset + -1 * (scrollTop / window.innerHeight));
+  cameraZPosition = cameraZOffset + -1 * (scrollTop / window.innerHeight);
   camera.position.z = cameraZPosition;
 });
 
@@ -115,11 +120,22 @@ const projectsMesh = [];
 const createMesh = (thumb, index) => {
   const aspect = thumb.width / thumb.height;
 
-  const planeGeometry = new THREE.PlaneGeometry(aspect, 1);
-  const planeMaterial = new THREE.MeshBasicMaterial();
+  const planeGeometry = new THREE.PlaneGeometry(aspect, 1, 20, 20);
+  // const planeMaterial = new THREE.MeshBasicMaterial();
+  const planeMaterial = new THREE.ShaderMaterial({
+    vertexShader: vertex,
+    fragmentShader: fragment,
+    // wireframe: true,
+    uniforms: {
+      uTexture: { value: thumb.texture },
+      uOpacity: { value: index == 0 ? 1 : 0.0 },
+      uTime: { value: 0 },
+      uShift: { value: 0 },
+    },
+  });
   const newMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 
-  newMesh.material.map = thumb.texture;
+  // newMesh.material.map = thumb.texture;
   newMesh.material.transparent = true;
   newMesh.material.opacity = index == 0 ? 1 : 0;
 
@@ -153,16 +169,21 @@ const clock = new THREE.Clock();
 
 const loop = () => {
   const elapsedTime = clock.getElapsedTime();
+  scrollTopDelayed = lerp(scrollTopDelayed, scrollTop, 0.1);
+  shiftTop = Math.round(scrollTop) - Math.round(scrollTopDelayed);
 
   if (projectsMesh.length) {
     projectsMesh.forEach((mesh, i) => {
+      mesh.material.uniforms.uTime.value = elapsedTime;
+      mesh.material.uniforms.uShift.value = shiftTop;
+      // console.log(mesh.material.uniforms.uTime.value);
       if (currentImg == i - 1) {
-        mesh.material.opacity =
+        mesh.material.uniforms.uOpacity.value =
           Math.abs(cameraZPosition - 0.5 - (cameraZOffset - 0.5)) % 1;
-        console.log(
-          i,
-          Math.abs(cameraZPosition - 0.5 - (cameraZOffset - 0.5)) % 1
-        );
+        // console.log(
+        //   i,
+        //   Math.abs(cameraZPosition - 0.5 - (cameraZOffset - 0.5)) % 1
+        // );
       }
     });
   }
@@ -183,3 +204,7 @@ const loop = () => {
 };
 
 loop();
+
+function lerp(start, end, amt) {
+  return (1 - amt) * start + amt * end;
+}
