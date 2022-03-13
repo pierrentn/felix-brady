@@ -17,6 +17,15 @@ export default class Experience {
   constructor(canvas) {
     this.debug = false;
     this.gui = new GUI();
+    this.debugObject = {
+      enableOpacity: true,
+      enableFadeIn: true,
+      apparitionDistance: 2.5,
+    };
+
+    this.gui.add(this.debugObject, "enableOpacity");
+    this.gui.add(this.debugObject, "enableFadeIn");
+
     this.texturesArray = Object.entries(projectsThumb);
 
     this.canvas = canvas;
@@ -144,18 +153,18 @@ export default class Experience {
       // wireframe: true,
       uniforms: {
         uTexture: { value: thumb.texture },
-        uFadeIn: { value: index == 1 ? 1.0 : 0.0 },
+        uFadeIn: { value: 0 },
+        uOpacity: { value: 0 },
         uTime: { value: 0 },
         uShift: { value: 0 },
       },
     });
     const newMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 
-    // const xPosition = index % 2 ? 1 : -1;
-    const xPosition = Math.sin(angle) * Math.random() * 0.3;
-    // console.log("xPosition", index, xPosition);
-    // const yPosition = (Math.random() * 2 - 1) * 0.1;
-    const yPosition = Math.cos(angle) * Math.random() * 0.3;
+    // const xPosition = Math.sin(angle) * Math.random() * 0.3;
+    const xPosition = 0;
+    // const yPosition = Math.cos(angle) * Math.random() * 0.3;
+    const yPosition = 0;
     const zPosition = index * -1;
 
     newMesh.position.set(xPosition, yPosition, zPosition);
@@ -189,35 +198,44 @@ export default class Experience {
   }
 
   updateMesh({ mesh, angle }, i, elapsedTime) {
-    let fadeIn = 0;
+    let fadeIn = this.debugObject.enableFadeIn ? 0 : 1;
+    let opacity = 1;
+
     const distance = mesh.position.z - this.camera.position.z;
     mesh.material.uniforms.uTime.value = elapsedTime;
     mesh.material.uniforms.uShift.value = this.shiftTop;
 
-    if (Math.abs(distance) < 1.5) {
-      // mesh.position.x += Math.sin(angle) * (1.5 / distance);
-      // mesh.position.y += Math.cos(angle) * (1.5 / distance);
-      // if (i == 1) console.log(distance.toFixed(2));
+    if (i == 0) {
+      document.querySelector(".debug1").innerText = distance;
     }
-    // if (i == 4) console.log(mesh.position.x, distance);
-    // if (this.currentImg == i - 1) {
-    if (true) {
-      mesh.position.x = Math.sin(angle) * (2 - Math.abs(distance));
-      mesh.position.y = Math.cos(angle) * (2 - Math.abs(distance));
+
+    if (Math.abs(distance) < 2.5) {
+      mesh.position.x = Math.sin(angle) * (1.5 - Math.abs(distance));
+      mesh.position.y = Math.cos(angle) * (1.5 - Math.abs(distance));
+
+      if (i == 0) document.querySelector(".debug2").innerText = mesh.position.x;
+
       // fadeIn = Math.abs(this.cameraZPosition - this.cameraZOffset);
-      fadeIn = 1 - Math.abs(distance) / 2.5;
+      if (this.debugObject.enableFadeIn) fadeIn = 1 - Math.abs(distance) / 2.5;
       // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, fadeIn, i);
 
-      // console.log(2 - Math.abs(distance));
+      if (
+        distance >= -0.75 &&
+        distance <= 0.75 &&
+        this.debugObject.enableOpacity
+      )
+        opacity = Math.abs(distance) / 0.75;
     } else if (distance > 1.5) {
       fadeIn = 1;
     }
+
     // else if (this.currentImg >= i - 1) {
     // fadeIn = 1;
     // } else {
     // fadeIn = 0;
     // }
     mesh.material.uniforms.uFadeIn.value = fadeIn;
+    mesh.material.uniforms.uOpacity.value = opacity;
     // Math.abs(this.projectsMesh[0].position.z - this.camera.position.z)
   }
 
