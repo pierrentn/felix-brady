@@ -1,3 +1,4 @@
+import GUI from "lil-gui";
 import * as THREE from "three";
 import { Scene, PerspectiveCamera } from "three";
 import gsap from "gsap";
@@ -14,6 +15,10 @@ function lerp(start, end, amt) {
 
 export default class Experience {
   constructor(canvas) {
+    this.debug = false;
+    this.gui = new GUI();
+    this.texturesArray = Object.entries(projectsThumb);
+
     this.canvas = canvas;
     this.sizes = {
       width: window.innerWidth,
@@ -22,8 +27,9 @@ export default class Experience {
     this.clock = new THREE.Clock();
 
     // Camera
-    this.cameraFov = 100;
-    this.cameraZOffset = 1;
+    this.cameraFov = 110;
+    this.cameraZOffset = 0;
+    // this.cameraZOffset = 0.1;
     this.cameraZPosition = this.cameraZOffset;
 
     this.currentImg = 0;
@@ -40,6 +46,8 @@ export default class Experience {
     this.scrollTopDelayed = 0;
 
     this.projectsMesh = [];
+    this.projectsLoaded = false;
+    this.projectsScaleFactor = 1.3;
 
     this.init();
   }
@@ -54,7 +62,26 @@ export default class Experience {
 
     this.initListeners();
 
+    // this.initDebugPlane();
+
     this.loop();
+  }
+
+  initDebugPlane() {
+    const geo = new THREE.PlaneBufferGeometry(0.2, 0.2);
+    const mat = new THREE.MeshBasicMaterial({ color: "yellow" });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(0, 0, -1);
+    const angle = {
+      value: 0,
+    };
+    this.gui.add(angle, "value", 0, Math.PI * 2 * 5).onChange(() => {
+      mesh.position.x = Math.sin(angle.value) * 1;
+      mesh.position.y = Math.cos(angle.value) * 1;
+    });
+    mesh.position.x = Math.sin(angle.value) * 1;
+    mesh.position.y = Math.cos(angle.value) * 1;
+    this.scene.add(mesh);
   }
 
   initScene() {
@@ -63,10 +90,10 @@ export default class Experience {
 
   initCamera() {
     this.camera = new PerspectiveCamera(
-      100,
+      this.cameraFov,
       this.sizes.width / this.sizes.height,
-      0.1,
-      this.cameraFov
+      0.001,
+      100
     );
     this.camera.position.set(0, 0, this.cameraZOffset);
     this.scene.add(this.camera);
@@ -83,15 +110,16 @@ export default class Experience {
 
   loadTextures() {
     const textureLoader = new THREE.TextureLoader();
-    Object.entries(projectsThumb).forEach((img, i) => {
+    this.texturesArray.forEach((img, i) => {
       textureLoader.load(img, (texture) => {
         const width = texture.source.data.naturalWidth;
         const height = texture.source.data.naturalHeight;
         const projectsThumb = { texture, width, height };
 
-        this.createMesh(projectsThumb, i);
+        this.createMesh(projectsThumb, i, img);
       });
     });
+    console.log(this.projectsMesh);
   }
 
   createGroup() {
@@ -99,64 +127,120 @@ export default class Experience {
     this.scene.add(this.projectsGroup);
   }
 
-  createMesh(thumb, index) {
+  createMesh(thumb, i, img) {
+    // Offset index to make it start at 1
+    const index = i + 1;
+
+    const baseAngle = Math.PI / 3;
+    const angle = baseAngle + baseAngle * i;
+    // console.log(angle);
+
     const aspect = thumb.width / thumb.height;
 
     const planeGeometry = new THREE.PlaneGeometry(aspect, 1, 20, 20);
     const planeMaterial = new THREE.ShaderMaterial({
       vertexShader: vertex,
       fragmentShader: fragment,
+      transparent: true,
       // wireframe: true,
       uniforms: {
         uTexture: { value: thumb.texture },
-        uOpacity: { value: index == 0 ? 1 : 0.0 },
+        uOpacity: { value: index == 1 ? 1.0 : 1.0 },
         uTime: { value: 0 },
         uShift: { value: 0 },
       },
     });
     const newMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 
-    // newMesh.material.map = thumb.texture;
-    newMesh.material.transparent = true;
-    newMesh.material.opacity = index == 0 ? 1 : 0;
-
-    const xPosition = index % 2 ? -1 : 1;
-    // const xPosition = 0;
-    const yPosition = (Math.random() * 2 - 1) * 0.1;
-    // const yPosition = 0;
+    // const xPosition = index % 2 ? 1 : -1;
+    const xPosition = Math.sin(angle) * Math.random() * 0.3;
+    // console.log("xPosition", index, xPosition);
+    // const yPosition = (Math.random() * 2 - 1) * 0.1;
+    const yPosition = Math.cos(angle) * Math.random() * 0.3;
     const zPosition = index * -1;
 
     newMesh.position.set(xPosition, yPosition, zPosition);
-    console.log(`z ${index}:`, index * -1);
-    newMesh.scale.set(1.3, 1.3, 1.3);
+    // console.log(`z ${i}:`, index * -1);
+    newMesh.scale.set(
+      this.projectsScaleFactor,
+      this.projectsScaleFactor,
+      this.projectsScaleFactor
+    );
     this.projectsGroup.add(newMesh);
 
-    this.projectsMesh.push(newMesh);
+    if (this.debug) {
+      const debugMaterial = new THREE.MeshBasicMaterial({
+        color: index % 2 ? "red" : "green",
+        wireframe: true,
+      });
+      const newDebugMesh = new THREE.Mesh(planeGeometry, debugMaterial);
+      this.scene.add(newDebugMesh);
+      newDebugMesh.position.set(xPosition, yPosition, zPosition);
+      newDebugMesh.scale.set(
+        this.projectsScaleFactor,
+        this.projectsScaleFactor,
+        this.projectsScaleFactor
+      );
+    }
+
+    this.projectsMesh[i] = { mesh: newMesh, angle };
+    if (this.projectsMesh.length == this.texturesArray.length) {
+      this.projectsLoaded = true;
+    }
+  }
+
+  updateMesh({ mesh, angle }, i, elapsedTime) {
+    let opacity = 0;
+    const distance = mesh.position.z - this.camera.position.z;
+    mesh.material.uniforms.uTime.value = elapsedTime;
+    mesh.material.uniforms.uShift.value = this.shiftTop;
+
+    if (Math.abs(distance) < 1.5) {
+      // mesh.position.x += Math.sin(angle) * (1.5 / distance);
+      // mesh.position.y += Math.cos(angle) * (1.5 / distance);
+      // if (i == 1) console.log(distance.toFixed(2));
+    }
+    mesh.position.x = Math.sin(angle) * (2 - Math.abs(distance));
+    mesh.position.y = Math.cos(angle) * (2 - Math.abs(distance));
+    // if (i == 4) console.log(mesh.position.x, distance);
+    // if (this.currentImg == i - 1) {
+    if (Math.abs(distance) < 2.5) {
+      // opacity = Math.abs(this.cameraZPosition - this.cameraZOffset);
+      opacity = 1 - Math.abs(distance) / 2.5;
+      // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, opacity, i);
+
+      // console.log(2 - Math.abs(distance));
+    } else if (distance > 1.5) {
+      opacity = 1;
+    }
+    // else if (this.currentImg >= i - 1) {
+    // opacity = 1;
+    // } else {
+    // opacity = 0;
+    // }
+    mesh.material.uniforms.uOpacity.value = opacity;
+    // Math.abs(this.projectsMesh[0].position.z - this.camera.position.z)
   }
 
   loop() {
     const elapsedTime = this.clock.getElapsedTime();
-    this.scrollTopDelayed = lerp(this.scrollTopDelayed, this.scrollTop, 0.1);
+
+    // Update scroll
+    this.scrollTopDelayed = lerp(this.scrollTopDelayed, this.scrollTop, 0.04);
     this.shiftTop =
       Math.round(this.scrollTop) - Math.round(this.scrollTopDelayed);
+    console.log(this.scrollTopDelayed, this.scrollTop);
+    this.camera.position.z =
+      this.cameraZOffset + -1 * (this.scrollTopDelayed / window.innerHeight);
 
-    if (this.projectsMesh.length) {
+    // Update individual project
+    if (this.projectsLoaded) {
       this.projectsMesh.forEach((mesh, i) => {
-        mesh.material.uniforms.uTime.value = elapsedTime;
-        mesh.material.uniforms.uShift.value = this.shiftTop;
-        // console.log(mesh.material.uniforms.uTime.value);
-        if (this.currentImg == i - 1) {
-          mesh.material.uniforms.uOpacity.value =
-            Math.abs(this.cameraZPosition - 0.5 - (this.cameraZOffset - 0.5)) %
-            1;
-          // console.log(
-          //   i,
-          //   Math.abs(cameraZPosition - 0.5 - (cameraZOffset - 0.5)) % 1
-          // );
-        }
+        this.updateMesh(mesh, i, elapsedTime);
       });
     }
 
+    // Update projects group
     // projectsGroup.position.y = 0.1 * mousePos.y;
     // projectsGroup.position.x = 0.1 * mousePos.x;
     gsap.to(this.projectsGroup.position, {
@@ -196,23 +280,23 @@ export default class Experience {
 
   initWheel() {
     window.addEventListener("wheel", (e) => {
-      // scrollTop = window.scrollY;
+      this.scrollDir = e.deltaY < 0 ? -1 : 1;
       this.scrollTop += e.deltaY;
       this.scrollTop = this.scrollTop <= 0 ? 0 : this.scrollTop;
-      console.log(this.scrollTop);
       this.currentImg = Math.trunc(this.scrollTop / window.innerHeight);
       // console.log(currentImg);
       // console.log(cameraZOffset + -1 * (this.scrollTop / window.innerHeight));
       this.cameraZPosition =
         this.cameraZOffset + -1 * (this.scrollTop / window.innerHeight);
-      this.camera.position.z = this.cameraZPosition;
+      // this.camera.position.z = this.cameraZPosition;
+      // console.log(this.scrollTop, this.cameraZPosition, this.currentImg);
     });
   }
 
   initMousemove() {
     window.addEventListener("mousemove", (e) => {
       this.mousePos.x = e.clientX / (this.sizes.width / 2) - 1;
-      this.mousePos.y = e.clientY / (this.sizes.width / 2) - 1;
+      this.mousePos.y = e.clientY / (this.sizes.height / 2) - 1;
     });
   }
 }
