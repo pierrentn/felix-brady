@@ -28,9 +28,7 @@ export default class Experience {
 
     // Camera
     this.cameraFov = 110;
-    this.cameraZOffset = 0;
-    // this.cameraZOffset = 0.1;
-    this.cameraZPosition = this.cameraZOffset;
+    this.cameraZPosition = 0;
 
     this.currentImg = 0;
 
@@ -44,6 +42,7 @@ export default class Experience {
     this.shiftTop = 0;
     this.scrollTop = 0;
     this.scrollTopDelayed = 0;
+    this.maxDeltaY = 75;
 
     this.projectsMesh = [];
     this.projectsLoaded = false;
@@ -95,7 +94,7 @@ export default class Experience {
       0.001,
       100
     );
-    this.camera.position.set(0, 0, this.cameraZOffset);
+    this.camera.position.set(0, 0, 0);
     this.scene.add(this.camera);
   }
 
@@ -145,7 +144,7 @@ export default class Experience {
       // wireframe: true,
       uniforms: {
         uTexture: { value: thumb.texture },
-        uOpacity: { value: index == 1 ? 1.0 : 1.0 },
+        uFadeIn: { value: index == 1 ? 1.0 : 0.0 },
         uTime: { value: 0 },
         uShift: { value: 0 },
       },
@@ -190,7 +189,7 @@ export default class Experience {
   }
 
   updateMesh({ mesh, angle }, i, elapsedTime) {
-    let opacity = 0;
+    let fadeIn = 0;
     const distance = mesh.position.z - this.camera.position.z;
     mesh.material.uniforms.uTime.value = elapsedTime;
     mesh.material.uniforms.uShift.value = this.shiftTop;
@@ -200,25 +199,25 @@ export default class Experience {
       // mesh.position.y += Math.cos(angle) * (1.5 / distance);
       // if (i == 1) console.log(distance.toFixed(2));
     }
-    mesh.position.x = Math.sin(angle) * (2 - Math.abs(distance));
-    mesh.position.y = Math.cos(angle) * (2 - Math.abs(distance));
     // if (i == 4) console.log(mesh.position.x, distance);
     // if (this.currentImg == i - 1) {
-    if (Math.abs(distance) < 2.5) {
-      // opacity = Math.abs(this.cameraZPosition - this.cameraZOffset);
-      opacity = 1 - Math.abs(distance) / 2.5;
-      // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, opacity, i);
+    if (true) {
+      mesh.position.x = Math.sin(angle) * (2 - Math.abs(distance));
+      mesh.position.y = Math.cos(angle) * (2 - Math.abs(distance));
+      // fadeIn = Math.abs(this.cameraZPosition - this.cameraZOffset);
+      fadeIn = 1 - Math.abs(distance) / 2.5;
+      // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, fadeIn, i);
 
       // console.log(2 - Math.abs(distance));
     } else if (distance > 1.5) {
-      opacity = 1;
+      fadeIn = 1;
     }
     // else if (this.currentImg >= i - 1) {
-    // opacity = 1;
+    // fadeIn = 1;
     // } else {
-    // opacity = 0;
+    // fadeIn = 0;
     // }
-    mesh.material.uniforms.uOpacity.value = opacity;
+    mesh.material.uniforms.uFadeIn.value = fadeIn;
     // Math.abs(this.projectsMesh[0].position.z - this.camera.position.z)
   }
 
@@ -226,12 +225,11 @@ export default class Experience {
     const elapsedTime = this.clock.getElapsedTime();
 
     // Update scroll
-    this.scrollTopDelayed = lerp(this.scrollTopDelayed, this.scrollTop, 0.04);
+    this.scrollTopDelayed = lerp(this.scrollTopDelayed, this.scrollTop, 0.1);
     this.shiftTop =
       Math.round(this.scrollTop) - Math.round(this.scrollTopDelayed);
-    console.log(this.scrollTopDelayed, this.scrollTop);
-    this.camera.position.z =
-      this.cameraZOffset + -1 * (this.scrollTopDelayed / window.innerHeight);
+    // console.log(this.scrollTopDelayed, this.scrollTop);
+    this.camera.position.z = -1 * (this.scrollTopDelayed / window.innerHeight);
 
     // Update individual project
     if (this.projectsLoaded) {
@@ -241,8 +239,7 @@ export default class Experience {
     }
 
     // Update projects group
-    // projectsGroup.position.y = 0.1 * mousePos.y;
-    // projectsGroup.position.x = 0.1 * mousePos.x;
+    //TODO Replace with lerp
     gsap.to(this.projectsGroup.position, {
       x: 0.1 * this.mousePos.x,
       y: 0.1 * this.mousePos.y,
@@ -280,14 +277,20 @@ export default class Experience {
 
   initWheel() {
     window.addEventListener("wheel", (e) => {
-      this.scrollDir = e.deltaY < 0 ? -1 : 1;
-      this.scrollTop += e.deltaY;
+      // this.scrollDir = e.deltaY < 0 ? -1 : 1;
+      // this.scrollTop += Math.min(e.deltaY, this.maxDeltaY * this.scrollDir);
+      if (e.deltaY < 0) {
+        this.scrollDir = -1;
+        this.scrollTop += Math.max(e.deltaY, this.maxDeltaY * this.scrollDir);
+      } else {
+        this.scrollDir = 1;
+        this.scrollTop += Math.min(e.deltaY, this.maxDeltaY * this.scrollDir);
+      }
+
       this.scrollTop = this.scrollTop <= 0 ? 0 : this.scrollTop;
       this.currentImg = Math.trunc(this.scrollTop / window.innerHeight);
       // console.log(currentImg);
-      // console.log(cameraZOffset + -1 * (this.scrollTop / window.innerHeight));
-      this.cameraZPosition =
-        this.cameraZOffset + -1 * (this.scrollTop / window.innerHeight);
+      this.cameraZPosition = -1 * (this.scrollTop / window.innerHeight);
       // this.camera.position.z = this.cameraZPosition;
       // console.log(this.scrollTop, this.cameraZPosition, this.currentImg);
     });
