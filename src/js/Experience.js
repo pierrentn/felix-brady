@@ -64,7 +64,7 @@ export default class Experience {
     this.initScene();
     this.initCamera();
     this.initRenderer();
-
+    this.setSizeOfView();
     this.createGroup();
     this.loadTextures();
 
@@ -105,6 +105,17 @@ export default class Experience {
     );
     this.camera.position.set(0, 0, 0);
     this.scene.add(this.camera);
+  }
+
+  setSizeOfView() {
+    const vFOV = THREE.MathUtils.degToRad(this.cameraFov); // convert vertical fov to radians
+    const height = 2 * Math.tan(vFOV / 2); // visible height
+    const width = height * (this.sizes.width / this.sizes.height); // visible width
+
+    this.viewSizes = {
+      width,
+      height,
+    };
   }
 
   initRenderer() {
@@ -290,6 +301,9 @@ export default class Experience {
       // Update renderer
       this.renderer.setSize(this.sizes.width, this.sizes.height);
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Update view sizes
+      this.setSizeOfView();
     });
   }
 
