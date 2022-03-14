@@ -17,6 +17,7 @@ export default class Experience {
   constructor(canvas) {
     this.debug = false;
     this.gui = new GUI();
+    this.gui.close();
     this.debugObject = {
       enableOpacity: true,
       enableFadeIn: true,
@@ -216,15 +217,15 @@ export default class Experience {
     mesh.material.uniforms.uTime.value = elapsedTime;
     mesh.material.uniforms.uShift.value = this.shiftTop;
 
-    if (i == 0) {
-      document.querySelector(".debug1").innerText = distance;
-    }
+    // if (i == 0) {
+    //   document.querySelector(".debug1").innerText = distance;
+    // }
 
     if (Math.abs(distance) < 2.5) {
       mesh.position.x = Math.sin(angle) * (1.5 - Math.abs(distance));
       mesh.position.y = Math.cos(angle) * (1.5 - Math.abs(distance));
 
-      if (i == 0) document.querySelector(".debug2").innerText = mesh.position.x;
+      // if (i == 0) document.querySelector(".debug2").innerText = mesh.position.x;
 
       // fadeIn = Math.abs(this.cameraZPosition - this.cameraZOffset);
       if (this.debugObject.enableFadeIn) fadeIn = 1 - Math.abs(distance) / 2.5;
