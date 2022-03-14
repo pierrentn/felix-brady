@@ -1,4 +1,5 @@
 varying vec2 vUv; 
+varying vec3 vPosition; 
 uniform float uTime;
 uniform float uShift;
 
@@ -13,6 +14,7 @@ void main() {
   
 
   vUv = uv;
+  vPosition = position;
 
   gl_Position = projectedPosition;
 }
