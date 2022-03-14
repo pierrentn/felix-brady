@@ -8,7 +8,6 @@ import fragment from "/src/shaders/frag.glsl?raw";
 import vertex from "/src/shaders/vert.glsl?raw";
 
 import projectsThumb from "./manifest.json";
-
 function lerp(start, end, amt) {
   return (1 - amt) * start + amt * end;
 }
@@ -27,7 +26,7 @@ export default class Experience {
     this.gui.add(this.debugObject, "enableOpacity");
     this.gui.add(this.debugObject, "enableFadeIn");
 
-    this.texturesArray = Object.entries(projectsThumb);
+    this.texturesArray = Object.values(projectsThumb);
 
     this.canvas = canvas;
     this.sizes = {
@@ -139,7 +138,6 @@ export default class Experience {
         this.createMesh(projectsThumb, i, img);
       });
     });
-    console.log(this.projectsMesh);
   }
 
   createGroup() {

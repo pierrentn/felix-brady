@@ -1,11 +1,11 @@
 {
-  "image1": "./../../static/project-images/1.jpg",
-  "image2": "./../../static/project-images/2.jpg",
-  "image3": "./../../static/project-images/3.jpg",
-  "image4": "./../../static/project-images/4.jpg",
-  "image5": "./../../static/project-images/5.jpg",
-  "image6": "./../../static/project-images/6.jpg",
-  "image7": "./../../static/project-images/7.jpg",
-  "image8": "./../../static/project-images/8.jpg",
-  "image9": "./../../static/project-images/9.jpg"
+  "image1": "/img/1.jpg",
+  "image2": "/img/2.jpg",
+  "image3": "/img/3.jpg",
+  "image4": "/img/4.jpg",
+  "image5": "/img/5.jpg",
+  "image6": "/img/6.jpg",
+  "image7": "/img/7.jpg",
+  "image8": "/img/8.jpg",
+  "image9": "/img/9.jpg"
 }
