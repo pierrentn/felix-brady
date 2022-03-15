@@ -15,7 +15,7 @@ function lerp(start, end, amt) {
 export default class Experience {
   constructor(canvas) {
     this.gui = new GUI();
-    this.gui.close();
+    // this.gui.close();
     this.debugObject = {
       enableFadeOut: true,
       enableFadeIn: true,
@@ -56,6 +56,14 @@ export default class Experience {
     this.projectsMesh = [];
     this.projectsLoaded = false;
     this.projectsScaleFactor = 1.3;
+
+    //Gallery params
+    this.apparitionDistance = this.debugObject.apparitionDistance;
+    this.gui
+      .add(this.debugObject, "apparitionDistance", 0.1, 4)
+      .onChange(
+        () => (this.apparitionDistance = this.debugObject.apparitionDistance)
+      );
 
     this.init();
   }
@@ -164,7 +172,7 @@ export default class Experience {
       uniforms: {
         uTexture: { value: thumb.texture },
         uFadeIn: { value: 0 },
-        uOpacity: { value: 0 },
+        uFadeOut: { value: 0 },
         uTime: { value: 0 },
         uShift: { value: 0 },
       },
@@ -219,14 +227,18 @@ export default class Experience {
     //   document.querySelector(".debug1").innerText = distance;
     // }
 
-    if (Math.abs(distance) < 2.5) {
+    if (Math.abs(distance) < this.apparitionDistance) {
+      // console.log(Math.abs(distance), this.distance);
+
+      //TODO Make it
       mesh.position.x = Math.sin(angle) * (1.5 - Math.abs(distance));
       mesh.position.y = Math.cos(angle) * (1.5 - Math.abs(distance));
 
       // if (i == 0) document.querySelector(".debug2").innerText = mesh.position.x;
 
       // fadeIn = Math.abs(this.cameraZPosition - this.cameraZOffset);
-      if (this.debugObject.enableFadeIn) fadeIn = 1 - Math.abs(distance) / 2.5;
+      if (this.debugObject.enableFadeIn)
+        fadeIn = 1 - Math.abs(distance) / this.apparitionDistance;
       // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, fadeIn, i);
 
       if (
