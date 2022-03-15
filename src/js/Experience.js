@@ -19,15 +19,36 @@ export default class Experience {
     this.debugObject = {
       enableFadeOut: true,
       enableFadeIn: true,
+      enableCircleMovement: true,
       apparitionDistance: 2.5,
+      disparitionDistance: 0.75,
+      maxScrollSpeed: 75,
+      progress: 1,
+      blurX: 7,
+      blurY: -7,
     };
     this.debug = false;
-
+    //TODO Not working
     this.gui.add(this.debugObject, "enableFadeOut");
     this.gui.add(this.debugObject, "enableFadeIn");
+    this.gui.add(this.debugObject, "enableCircleMovement");
+    this.gui.add(this.debugObject, "progress", 0, 1).onChange(() => {
+      this.projectsMesh.forEach((mesh) => {
+        mesh.mesh.material.uniforms.uProgress.value = this.debugObject.progress;
+      });
+    });
+    this.gui.add(this.debugObject, "blurX", -16, 16).onChange(() => {
+      this.projectsMesh.forEach((mesh) => {
+        mesh.mesh.material.uniforms.uBlurX.value = this.debugObject.blurX;
+      });
+    });
+    this.gui.add(this.debugObject, "blurY", -16, 16).onChange(() => {
+      this.projectsMesh.forEach((mesh) => {
+        mesh.mesh.material.uniforms.uBlurY.value = this.debugObject.blurY;
+      });
+    });
 
     this.texturesArray = Object.values(projectsThumb);
-
     this.canvas = canvas;
     this.sizes = {
       width: window.innerWidth,
@@ -51,7 +72,10 @@ export default class Experience {
     this.shiftTop = 0;
     this.scrollTop = 0;
     this.scrollTopDelayed = 0;
-    this.maxDeltaY = 75;
+    this.maxDeltaY = this.debugObject.maxScrollSpeed;
+    this.gui
+      .add(this.debugObject, "maxScrollSpeed", 30, 200)
+      .onChange(() => (this.maxDeltaY = this.debugObject.maxScrollSpeed));
 
     this.projectsMesh = [];
     this.projectsLoaded = false;
@@ -64,6 +88,12 @@ export default class Experience {
       .onChange(
         () => (this.apparitionDistance = this.debugObject.apparitionDistance)
       );
+    this.disparitionDistance = this.debugObject.disparitionDistance;
+    this.gui
+      .add(this.debugObject, "disparitionDistance", 0.1, 4)
+      .onChange(
+        () => (this.disparitionDistance = this.debugObject.disparitionDistance)
+      );
 
     this.init();
   }
@@ -72,6 +102,7 @@ export default class Experience {
     this.initScene();
     this.initCamera();
     this.initRenderer();
+    this.initPostProcessing();
     this.setSizeOfView();
     this.createGroup();
     this.loadTextures();
@@ -135,10 +166,14 @@ export default class Experience {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   }
 
+  initPostProcessing() {}
+
   loadTextures() {
     const textureLoader = new THREE.TextureLoader();
     this.texturesArray.forEach((img, i) => {
       textureLoader.load(img, (texture) => {
+        texture.minFilter = THREE.minFilter;
+        texture.magFilter = THREE.LinearFilter;
         const width = texture.source.data.naturalWidth;
         const height = texture.source.data.naturalHeight;
         const projectsThumb = { texture, width, height };
@@ -175,6 +210,10 @@ export default class Experience {
         uFadeOut: { value: 0 },
         uTime: { value: 0 },
         uShift: { value: 0 },
+        uRez: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
+        uProgress: { value: this.debugObject.progress },
+        uBlurX: { value: this.debugObject.blurX },
+        uBlurY: { value: this.debugObject.blurY },
       },
     });
     const newMesh = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -223,30 +262,33 @@ export default class Experience {
     mesh.material.uniforms.uTime.value = elapsedTime;
     mesh.material.uniforms.uShift.value = this.shiftTop;
 
-    // if (i == 0) {
-    //   document.querySelector(".debug1").innerText = distance;
-    // }
+    if (i == 0) {
+      document.querySelector(".debug1").innerText = distance;
+    }
 
-    if (Math.abs(distance) < this.apparitionDistance) {
+    if (Math.abs(distance) - 0.5 < this.apparitionDistance) {
       // console.log(Math.abs(distance), this.distance);
 
-      //TODO Make it
-      mesh.position.x = Math.sin(angle) * (1.5 - Math.abs(distance));
-      mesh.position.y = Math.cos(angle) * (1.5 - Math.abs(distance));
+      //TODO Make it depending view size
+      if (this.debugObject.enableCircleMovement) {
+        mesh.position.x = Math.sin(angle) * (1.5 - Math.abs(distance));
+        mesh.position.y = Math.cos(angle) * (1.5 - Math.abs(distance));
+      }
 
       // if (i == 0) document.querySelector(".debug2").innerText = mesh.position.x;
 
       // fadeIn = Math.abs(this.cameraZPosition - this.cameraZOffset);
       if (this.debugObject.enableFadeIn)
-        fadeIn = 1 - Math.abs(distance) / this.apparitionDistance;
+        fadeIn = 1 - (Math.abs(distance) - 0.5) / this.apparitionDistance;
       // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, fadeIn, i);
+      if (i == 0) console.log(fadeIn);
 
-      if (
-        distance >= -0.75 &&
-        distance <= 0.75 &&
-        this.debugObject.enableFadeOut
-      )
-        fadeOut = Math.abs(distance) / 0.75;
+      // if (
+      //   distance >= -this.disparitionDistance &&
+      //   distance <= this.disparitionDistance &&
+      //   this.debugObject.enableFadeOut
+      // )
+      fadeOut = (-1 * distance) / this.disparitionDistance;
     } else if (distance > this.apparitionDistance) {
       fadeIn = 1;
     }
