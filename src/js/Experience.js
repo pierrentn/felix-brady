@@ -14,16 +14,16 @@ function lerp(start, end, amt) {
 
 export default class Experience {
   constructor(canvas) {
-    this.debug = false;
     this.gui = new GUI();
     this.gui.close();
     this.debugObject = {
-      enableOpacity: true,
+      enableFadeOut: true,
       enableFadeIn: true,
       apparitionDistance: 2.5,
     };
+    this.debug = false;
 
-    this.gui.add(this.debugObject, "enableOpacity");
+    this.gui.add(this.debugObject, "enableFadeOut");
     this.gui.add(this.debugObject, "enableFadeIn");
 
     this.texturesArray = Object.values(projectsThumb);
@@ -209,7 +209,7 @@ export default class Experience {
 
   updateMesh({ mesh, angle }, i, elapsedTime) {
     let fadeIn = this.debugObject.enableFadeIn ? 0 : 1;
-    let opacity = 1;
+    let fadeOut = 1;
 
     const distance = mesh.position.z - this.camera.position.z;
     mesh.material.uniforms.uTime.value = elapsedTime;
@@ -232,10 +232,10 @@ export default class Experience {
       if (
         distance >= -0.75 &&
         distance <= 0.75 &&
-        this.debugObject.enableOpacity
+        this.debugObject.enableFadeOut
       )
-        opacity = Math.abs(distance) / 0.75;
-    } else if (distance > 1.5) {
+        fadeOut = Math.abs(distance) / 0.75;
+    } else if (distance > this.apparitionDistance) {
       fadeIn = 1;
     }
 
@@ -245,7 +245,7 @@ export default class Experience {
     // fadeIn = 0;
     // }
     mesh.material.uniforms.uFadeIn.value = fadeIn;
-    mesh.material.uniforms.uOpacity.value = opacity;
+    mesh.material.uniforms.uFadeOut.value = fadeOut;
     // Math.abs(this.projectsMesh[0].position.z - this.camera.position.z)
   }
 

@@ -4,7 +4,7 @@ uniform sampler2D uTexture;
 uniform float uFadeIn;
 uniform float uTime;
 uniform float uShift;
-uniform float uOpacity;
+uniform float uFadeOut;
 
 void main() {
   vec4 textureColor = texture2D(uTexture, vUv);
@@ -18,7 +18,7 @@ void main() {
 
   // float position = vPosition.x;
 
-  gl_FragColor = vec4(textureColor.xyz * uFadeIn, uOpacity);
+  gl_FragColor = vec4(textureColor.xyz * uFadeIn, uFadeOut);
   // gl_FragColor = vec4(vPosition.x);
   // gl_FragColor = vec4(vUv.x);
 }
