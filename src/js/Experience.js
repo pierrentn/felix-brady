@@ -307,6 +307,8 @@ export default class Experience {
   }
 
   loop() {
+    this.stats.begin();
+
     const elapsedTime = this.clock.getElapsedTime();
 
     // Update scroll
