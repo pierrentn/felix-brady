@@ -1,4 +1,5 @@
 import GUI from "lil-gui";
+import Stats from "stats.js";
 import * as THREE from "three";
 import { Scene, PerspectiveCamera } from "three";
 import gsap from "gsap";
@@ -15,6 +16,8 @@ function lerp(start, end, amt) {
 export default class Experience {
   constructor(canvas) {
     this.gui = new GUI();
+    this.stats = new Stats();
+    document.body.appendChild(this.stats.dom);
     // this.gui.close();
     this.debugObject = {
       enableFadeOut: true,
@@ -331,6 +334,8 @@ export default class Experience {
 
     // Render
     this.renderer.render(this.scene, this.camera);
+
+    this.stats.end();
 
     window.requestAnimationFrame(() => this.loop());
   }
