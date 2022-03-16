@@ -49,9 +49,9 @@ float Pi = 6.28318530718; // Pi*2
 
 void main() {
 // GAUSSIAN BLUR SETTINGS {{{
-float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-float Quality = 35.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-float Size = 100.0; // BLUR SIZE (Radius)
+float Directions = 25.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+float Quality = 10.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
+float Size = 40.0; // BLUR SIZE (Radius)
 // GAUSSIAN BLUR SETTINGS }}}
 vec2 Radius = Size/uRez;
 
@@ -74,7 +74,7 @@ vec2 Radius = Size/uRez;
   // Output to screen
   textureColor /= Quality * Directions - 15.0;
 
-  float blurDelay = pow(uFadeIn, 2.);
+  float blurDelay = pow(uFadeIn, 3.);
   vec4 mixColor = mix(textureColor, initialTextureColor, blurDelay);
 
   // vec2 displacedUv = vec2(vUv);
