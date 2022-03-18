@@ -195,8 +195,9 @@ export default class Experience {
     // Offset index to make it start at 1
     const index = i + 1;
 
-    const baseAngle = Math.PI / 3;
-    const angle = baseAngle + baseAngle * i;
+    // const baseAngle = Math.PI / 3;
+    const baseAngle = -Math.PI / 2;
+    const angle = baseAngle + Math.PI * i;
     // console.log(angle);
 
     const aspect = thumb.width / thumb.height;
