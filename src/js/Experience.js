@@ -196,7 +196,7 @@ export default class Experience {
     const index = i + 1;
 
     // const baseAngle = Math.PI / 3;
-    const baseAngle = -Math.PI / 2;
+    const baseAngle = Math.PI / 2;
     const angle = baseAngle + Math.PI * i;
     // console.log(angle);
 
