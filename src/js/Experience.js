@@ -265,9 +265,9 @@ export default class Experience {
     mesh.material.uniforms.uTime.value = elapsedTime;
     mesh.material.uniforms.uShift.value = this.shiftTop;
 
-    if (i == 0) {
-      document.querySelector(".debug1").innerText = distance;
-    }
+    // if (i == 0) {
+    //   document.querySelector(".debug1").innerText = distance;
+    // }
 
     if (Math.abs(distance) - 0.5 < this.apparitionDistance) {
       // console.log(Math.abs(distance), this.distance);
@@ -284,7 +284,7 @@ export default class Experience {
       if (this.debugObject.enableFadeIn)
         fadeIn = 1 - (Math.abs(distance) - 0.5) / this.apparitionDistance;
       // if (i == 0) console.log(distance.toFixed(2), mesh.position.x, fadeIn, i);
-      if (i == 0) console.log(fadeIn);
+      // if (i == 0) console.log(fadeIn);
 
       // if (
       //   distance >= -this.disparitionDistance &&
