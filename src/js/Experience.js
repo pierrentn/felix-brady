@@ -32,24 +32,24 @@ export default class Experience {
     };
     this.debug = false;
     //TODO Not working
-    this.gui.add(this.debugObject, "enableFadeOut");
+    // this.gui.add(this.debugObject, "enableFadeOut");
     this.gui.add(this.debugObject, "enableFadeIn");
     this.gui.add(this.debugObject, "enableCircleMovement");
-    this.gui.add(this.debugObject, "progress", 0, 1).onChange(() => {
-      this.projectsMesh.forEach((mesh) => {
-        mesh.mesh.material.uniforms.uProgress.value = this.debugObject.progress;
-      });
-    });
-    this.gui.add(this.debugObject, "blurX", -16, 16).onChange(() => {
-      this.projectsMesh.forEach((mesh) => {
-        mesh.mesh.material.uniforms.uBlurX.value = this.debugObject.blurX;
-      });
-    });
-    this.gui.add(this.debugObject, "blurY", -16, 16).onChange(() => {
-      this.projectsMesh.forEach((mesh) => {
-        mesh.mesh.material.uniforms.uBlurY.value = this.debugObject.blurY;
-      });
-    });
+    // this.gui.add(this.debugObject, "progress", 0, 1).onChange(() => {
+    //   this.projectsMesh.forEach((mesh) => {
+    //     mesh.mesh.material.uniforms.uProgress.value = this.debugObject.progress;
+    //   });
+    // });
+    // this.gui.add(this.debugObject, "blurX", -16, 16).onChange(() => {
+    //   this.projectsMesh.forEach((mesh) => {
+    //     mesh.mesh.material.uniforms.uBlurX.value = this.debugObject.blurX;
+    //   });
+    // });
+    // this.gui.add(this.debugObject, "blurY", -16, 16).onChange(() => {
+    //   this.projectsMesh.forEach((mesh) => {
+    //     mesh.mesh.material.uniforms.uBlurY.value = this.debugObject.blurY;
+    //   });
+    // });
 
     this.texturesArray = Object.values(projectsThumb);
     this.canvas = canvas;
