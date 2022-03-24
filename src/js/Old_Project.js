@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import Experience from "./Experience";
 
 //Shaders
 import fragment from "/src/shaders/frag.glsl?raw";
 import vertex from "/src/shaders/vert.glsl?raw";
 
-export default class Project {
+export default class Project extends Experience {
   constructor(
     projectThumb,
     i,
