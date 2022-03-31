@@ -6,7 +6,9 @@ import Camera from "./Camera";
 import Renderer from "./Renderer";
 import World from "./World/World";
 import Ressources from "./Utils/Ressources";
+import Scroll from "./Utils/Scroll";
 import sources from "./manifest";
+import Debug from "./Utils/Debug";
 
 let instance = null;
 
@@ -19,10 +21,12 @@ export default class Experience {
 
     this.canvas = canvas;
 
+    this.debug = new Debug();
     this.sizes = new Sizes();
     this.time = new Time();
     this.scene = new THREE.Scene();
     this.ressources = new Ressources(sources);
+    this.scroll = new Scroll();
     this.camera = new Camera();
     this.camera.resize();
     this.renderer = new Renderer();
@@ -39,5 +43,7 @@ export default class Experience {
 
   update() {
     this.renderer.update();
+    this.world.update();
+    if (this.debug.active) this.debug.update();
   }
 }

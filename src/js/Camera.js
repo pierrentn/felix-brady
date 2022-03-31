@@ -8,10 +8,15 @@ export default class Camera {
     this.sizes = this.experience.sizes;
     this.scene = this.experience.scene;
     this.canvas = this.experience.canvas;
+    this.scroll = this.experience.scroll.instance;
 
     this.cameraFov = 110;
+    this.scrollTop = 0;
 
     this.setInstance();
+    this.scroll.on((e) => {
+      this.updatePosition(e);
+    });
   }
 
   setInstance() {
@@ -28,5 +33,12 @@ export default class Camera {
   resize() {
     this.instance.aspect = this.sizes.width / this.sizes.height;
     this.instance.updateProjectionMatrix();
+  }
+
+  updatePosition(e) {
+    this.scrollTop += e.deltaY / 7500;
+    this.scrollTop = this.scrollTop >= 0 ? 0 : this.scrollTop;
+    this.instance.position.z = this.scrollTop;
+    // console.log(this.scrollTop);
   }
 }
