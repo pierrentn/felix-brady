@@ -12,7 +12,10 @@ export default class Debug {
     }
   }
 
-  update() {
+  statsBegin() {
     this.stats.begin();
+  }
+  statsEnd() {
+    this.stats.end();
   }
 }

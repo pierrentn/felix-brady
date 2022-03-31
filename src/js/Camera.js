@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import Experience from "./Experience";
+import { lerp } from "./Utils/Maths";
 
 export default class Camera {
   constructor() {
@@ -12,6 +13,7 @@ export default class Camera {
 
     this.cameraFov = 110;
     this.scrollTop = 0;
+    this.delayedScrollTop = 0;
 
     this.setInstance();
     this.scroll.on((e) => {
@@ -36,9 +38,12 @@ export default class Camera {
   }
 
   updatePosition(e) {
-    this.scrollTop += e.deltaY / 7500;
+    this.scrollTop += e.deltaY;
     this.scrollTop = this.scrollTop >= 0 ? 0 : this.scrollTop;
-    this.instance.position.z = this.scrollTop;
-    // console.log(this.scrollTop);
+  }
+
+  update() {
+    this.delayedScrollTop = lerp(this.delayedScrollTop, this.scrollTop, 0.1);
+    this.instance.position.z = this.delayedScrollTop;
   }
 }

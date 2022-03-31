@@ -10,14 +10,16 @@ export default class World {
     this.explore = new Explore();
 
     this.ressources.on("ready", () => {
-      // this.ressources.items.forEach((item) => {
-      //   this.project = new Projects(item);
-      // });
       this.explore.setProjects();
     });
   }
 
   update() {
     this.explore.update();
+    if (this.explore.projects.length) {
+      this.explore.projects.forEach((project) => {
+        project.update();
+      });
+    }
   }
 }

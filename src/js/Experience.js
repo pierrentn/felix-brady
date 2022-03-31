@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import Sizes from "./Utils/Sizes";
+import Mouse from "./Utils/Mouse";
 import Time from "./Utils/Time";
 import Camera from "./Camera";
 import Renderer from "./Renderer";
@@ -23,6 +24,7 @@ export default class Experience {
 
     this.debug = new Debug();
     this.sizes = new Sizes();
+    this.mouse = new Mouse();
     this.time = new Time();
     this.scene = new THREE.Scene();
     this.ressources = new Ressources(sources);
@@ -42,8 +44,11 @@ export default class Experience {
   }
 
   update() {
-    this.renderer.update();
+    if (this.debug.active) this.debug.statsBegin();
+    this.mouse.update();
+    this.camera.update();
     this.world.update();
-    if (this.debug.active) this.debug.update();
+    this.renderer.update();
+    if (this.debug.active) this.debug.statsEnd();
   }
 }

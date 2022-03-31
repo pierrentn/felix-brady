@@ -9,6 +9,8 @@ export default class Scroll {
   }
 
   setInstance() {
-    this.instance = new VirtualScroll();
+    this.instance = new VirtualScroll({
+      mouseMultiplier: 0.0001,
+    });
   }
 }
