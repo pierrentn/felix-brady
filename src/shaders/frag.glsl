@@ -9,8 +9,12 @@ uniform vec2 uRez;
 uniform float uProgress;
 
 uniform float uBlurChoice;
+uniform bool uBlurOnly;
 uniform float uBlurX;
 uniform float uBlurY;
+uniform float uBlurDirections;
+uniform float uBlurQuality;
+uniform float uBlurSize;
 
 vec4 blur13(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
   vec4 color = vec4(0.0);
@@ -38,9 +42,9 @@ void main() {
   if(uBlurChoice == 0.0) {
     bluredTextureColor = textureColor;
     // GAUSSIAN BLUR SETTINGS {{{
-    float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-    float Quality = 3.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-    float Size = 8.0; // BLUR SIZE (Radius)
+    float Directions = uBlurDirections; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+    float Quality = uBlurQuality; // BLUR QUALITY (Default 4.0 - More is better but slower)
+    float Size = uBlurSize; // BLUR SIZE (Radius)
     vec2 Radius = Size/uRez;
     // GAUSSIAN BLUR SETTINGS }}}
 
@@ -54,11 +58,11 @@ void main() {
     bluredTextureColor /= Quality * Directions - 15.0;
 
   } else {
-    bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(5.0));
+    bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(uBlurX, uBlurY));
   }
 
-  // float blurDelay = pow(uFadeIn, 2.);
-  float blurDelay = pow(uFadeIn, 5.);
+  float blurDelay = pow(uFadeIn, 3.);
+  blurDelay = uBlurOnly ? 0.0 : blurDelay;
   vec4 mixColor = mix(bluredTextureColor, textureColor, blurDelay);
 
 
@@ -71,6 +75,6 @@ void main() {
 
 
   gl_FragColor = vec4(mixColor.xyz * uFadeIn, uFadeOut);
-  // gl_FragColor = vec4(textureColor);
+  // gl_FragColor = vec4(blurDelay);
   // gl_FragColor = vec4(vec3(uFadeOut), 1.0);
 }

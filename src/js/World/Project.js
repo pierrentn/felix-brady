@@ -63,12 +63,21 @@ export default class Project {
         uTime: { value: 0 },
         uShift: { value: 0 },
         uRez: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
-        uProgress: { value: this.debugObject.progress },
         uBlurChoice: { value: this.debugObject.uBlurChoice },
-        uBlurX: { value: this.debugObject.blurX },
-        uBlurY: { value: this.debugObject.blurY },
+        uBlurOnly: { value: this.debugObject.uBlurOnly },
+        uBlurDirections: { value: this.debugObject.uBlurDirections },
+        uBlurQuality: { value: this.debugObject.uBlurQuality },
+        uBlurSize: { value: this.debugObject.uBlurSize },
+        uProgress: { value: this.debugObject.progress },
+        uBlurX: { value: this.debugObject.uBlurX },
+        uBlurY: { value: this.debugObject.uBlurY },
       },
     });
+    console.log(
+      this.project.material.uniforms.uBlurDirections,
+      this.project.material.uniforms.uBlurQuality,
+      this.project.material.uniforms.uBlurSize
+    );
   }
 
   setMesh() {

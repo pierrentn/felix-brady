@@ -21,9 +21,13 @@ export default class Explore {
       // apparitionDistance: 2.5,
       disparitionDistance: 0.75,
       progress: 1,
-      blurChoice: 0,
-      blurX: 7,
-      blurY: -7,
+      uBlurOnly: false,
+      uBlurChoice: 0,
+      uBlurDirections: 16,
+      uBlurQuality: 4,
+      uBlurSize: 16,
+      uBlurX: 7,
+      uBlurY: 7,
     };
 
     if (this.debug.active) {
@@ -42,26 +46,67 @@ export default class Explore {
 
       this.blurDebugFolder = this.debugFolder.addFolder("Blur");
       this.blurDebugFolder
-        .add(this.debugObject, "blurChoice", [0, 1])
+        .add(this.debugObject, "uBlurChoice", [0, 1])
         .onChange((val) => {
           this.projects.forEach((project) => {
             project.project.material.uniforms.uBlurChoice.value = val;
           });
         });
       this.blurDebugFolder
-        .add(this.debugObject, "blurX", -16, 16)
+        .add(this.debugObject, "uBlurOnly")
+        .name("Show blur only")
+        .onChange((val) => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurOnly.value = val;
+          });
+        });
+
+      //Blur 0
+      this.blurDebugFolder
+        .add(this.debugObject, "uBlurDirections", 16, 40)
+        .name("blur0 direction")
         .onChange(() => {
           this.projects.forEach((project) => {
-            project.project.material.uniforms.uBlurX.value =
-              this.debugObject.blurX;
+            project.project.material.uniforms.uBlurDirections.value =
+              this.debugObject.uBlurDirections;
           });
         });
       this.blurDebugFolder
-        .add(this.debugObject, "blurY", -16, 16)
+        .add(this.debugObject, "uBlurQuality", 4, 15)
+        .name("blur0 quality")
+        .onChange(() => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurQuality.value =
+              this.debugObject.uBlurQuality;
+          });
+        });
+      this.blurDebugFolder
+        .add(this.debugObject, "uBlurSize", 8, 32)
+        .name("blur0 size")
+        .onChange(() => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurSize.value =
+              this.debugObject.uBlurSize;
+          });
+        });
+
+      //Blur 1
+      this.blurDebugFolder
+        .add(this.debugObject, "uBlurX", -16, 16)
+        .name("blur1 directionX")
+        .onChange(() => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurX.value =
+              this.debugObject.uBlurX;
+          });
+        });
+      this.blurDebugFolder
+        .add(this.debugObject, "uBlurY", -16, 16)
+        .name("blur1 directionY")
         .onChange(() => {
           this.projects.forEach((project) => {
             project.project.material.uniforms.uBlurY.value =
-              this.debugObject.blurY;
+              this.debugObject.uBlurY;
           });
         });
     }
