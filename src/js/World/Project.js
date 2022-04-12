@@ -96,10 +96,8 @@ export default class Project {
 
     if (Math.abs(distance) - 0.5 < this.apparitionDistance) {
       //TODO Make it depending view size
-      if (Math.abs(distance) - 0.5 < this.apparitionDistance) {
-        mesh.position.x = Math.sin(this.angle) * (1.5 - Math.abs(distance));
-        mesh.position.y = Math.cos(this.angle) * (1.5 - Math.abs(distance));
-      }
+      mesh.position.x = Math.sin(this.angle) * (1.5 - Math.abs(distance));
+      mesh.position.y = Math.cos(this.angle) * (1.5 - Math.abs(distance));
 
       if (this.debugObject.enableFadeIn)
         fadeIn = 1 - (Math.abs(distance) - 0.5) / this.apparitionDistance;
