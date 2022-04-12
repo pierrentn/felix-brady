@@ -21,7 +21,7 @@ export default class Renderer {
     };
 
     this.setInstance();
-    this.setPostProcess();
+    // this.setPostProcess();
     if (this.debug.active) this.setDebug();
   }
 

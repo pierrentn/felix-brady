@@ -21,12 +21,14 @@ export default class Explore {
       // apparitionDistance: 2.5,
       disparitionDistance: 0.75,
       progress: 1,
+      blurChoice: 0,
       blurX: 7,
       blurY: -7,
     };
 
     if (this.debug.active) {
       this.debugFolder = this.debug.ui.addFolder("Projects");
+
       this.debugFolder.add(this.debugObject, "enableFadeOut");
       this.debugFolder.add(this.debugObject, "enableFadeIn");
       this.debugFolder.add(this.debugObject, "enableDisplacementMovement");
@@ -37,18 +39,31 @@ export default class Explore {
             this.debugObject.progress;
         });
       });
-      this.debugFolder.add(this.debugObject, "blurX", -16, 16).onChange(() => {
-        this.projects.forEach((project) => {
-          project.project.material.uniforms.uBlurX.value =
-            this.debugObject.blurX;
+
+      this.blurDebugFolder = this.debugFolder.addFolder("Blur");
+      this.blurDebugFolder
+        .add(this.debugObject, "blurChoice", [0, 1])
+        .onChange((val) => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurChoice.value = val;
+          });
         });
-      });
-      this.debugFolder.add(this.debugObject, "blurY", -16, 16).onChange(() => {
-        this.projects.forEach((project) => {
-          project.project.material.uniforms.uBlurY.value =
-            this.debugObject.blurY;
+      this.blurDebugFolder
+        .add(this.debugObject, "blurX", -16, 16)
+        .onChange(() => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurX.value =
+              this.debugObject.blurX;
+          });
         });
-      });
+      this.blurDebugFolder
+        .add(this.debugObject, "blurY", -16, 16)
+        .onChange(() => {
+          this.projects.forEach((project) => {
+            project.project.material.uniforms.uBlurY.value =
+              this.debugObject.blurY;
+          });
+        });
     }
   }
 

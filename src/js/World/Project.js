@@ -64,6 +64,7 @@ export default class Project {
         uShift: { value: 0 },
         uRez: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
         uProgress: { value: this.debugObject.progress },
+        uBlurChoice: { value: this.debugObject.uBlurChoice },
         uBlurX: { value: this.debugObject.blurX },
         uBlurY: { value: this.debugObject.blurY },
       },
@@ -122,10 +123,10 @@ export default class Project {
     }
 
     if (this.project.index == 0) {
-      console.log("------------------------");
-      console.log("fadeOut", fadeOut.toFixed(2));
-      // console.log("fadeIn", fadeIn.toFixed(2));
-      console.log("distance", distance);
+      // console.log("------------------------");
+      // console.log("fadeOut", fadeOut.toFixed(2));
+      // // console.log("fadeIn", fadeIn.toFixed(2));
+      // console.log("distance", distance);
     }
 
     //Update project uniforms
