@@ -30,7 +30,11 @@ export default class Project {
     this.baseAngle = -Math.PI / 2;
     this.angle = this.baseAngle + Math.PI * this.project.index;
     this.scaleFactor = 1.3;
+    //base apparition dist
     this.apparitionDistance = 2.5;
+    //end fade in dist
+    this.fullFadeInDist = 0.5;
+    //define start dist of fade out
     this.disparitionDistance = 0.75;
 
     //Setup
@@ -86,28 +90,53 @@ export default class Project {
     );
   }
 
+  //TODO Make full visibility interval clearer
+
   update() {
     const { mesh, material } = this.project;
 
     let fadeIn = this.debugObject.enableFadeIn ? 0 : 1;
     let fadeOut = 1;
-    const distance = mesh.position.z - this.camera.instance.position.z;
-    material.uniforms.uTime.value = this.time.elapsed;
+    //Distance between camera and project
+    const distance = Math.abs(
+      mesh.position.z - this.camera.instance.position.z
+    );
+    // if (this.project.index == 0) console.log(distance);
 
-    if (Math.abs(distance) - 0.5 < this.apparitionDistance) {
+    //If in active zone (project pos, fadeIn, fadeOut)
+    if (distance - this.fullFadeInDist < this.apparitionDistance) {
+      this.isTriggered = [true, distance];
+
       //TODO Make it depending view size
-      mesh.position.x = Math.sin(this.angle) * (1.5 - Math.abs(distance));
-      mesh.position.y = Math.cos(this.angle) * (1.5 - Math.abs(distance));
+      if (this.debugObject.enableDisplacementMovement) {
+        mesh.position.x = Math.sin(this.angle) * (1.5 - distance);
+        mesh.position.y = Math.cos(this.angle) * (1.5 - distance);
+      }
 
       if (this.debugObject.enableFadeIn)
-        fadeIn = 1 - (Math.abs(distance) - 0.5) / this.apparitionDistance;
-      if (this.i == 0) console.log(fadeIn);
-
+        fadeIn = 1 - (distance - this.fullFadeInDist) / this.apparitionDistance;
       if (this.debugObject.enableFadeOut)
-        fadeOut = (-1 * distance) / this.disparitionDistance;
+        fadeOut = distance / this.disparitionDistance;
+    } else {
+      this.isTriggered = [false, distance];
     }
 
+    if (this.project.index == 0) {
+      console.log("------------------------");
+      console.log("fadeOut", fadeOut.toFixed(2));
+      // console.log("fadeIn", fadeIn.toFixed(2));
+      console.log("distance", distance);
+    }
+
+    //Update project uniforms
     material.uniforms.uFadeIn.value = fadeIn;
     material.uniforms.uFadeOut.value = fadeOut;
+    material.uniforms.uTime.value = this.time.elapsed;
   }
 }
+
+/**
+ * 1 - x / 2.5 = 1
+ * x / 2.5 = 0
+ * x = 0
+ */
