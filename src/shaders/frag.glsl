@@ -7,8 +7,14 @@ uniform float uShift;
 uniform float uFadeOut;
 uniform vec2 uRez;
 uniform float uProgress;
+
+uniform float uBlurChoice;
+uniform bool uBlurOnly;
 uniform float uBlurX;
 uniform float uBlurY;
+uniform float uBlurDirections;
+uniform float uBlurQuality;
+uniform float uBlurSize;
 
 vec4 blur13(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
   vec4 color = vec4(0.0);
@@ -30,46 +36,45 @@ float Pi = 6.28318530718; // Pi*2
 
 
 void main() {
-// GAUSSIAN BLUR SETTINGS {{{
-float Directions = 18.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-float Quality = 5.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-float Size = 20.0; // BLUR SIZE (Radius)
-// GAUSSIAN BLUR SETTINGS }}}
-vec2 Radius = Size/uRez;
+  vec4 textureColor = texture2D(uTexture, vUv);
+  vec4 bluredTextureColor;
 
+  if(uBlurChoice == 0.0) {
+    bluredTextureColor = textureColor;
+    // GAUSSIAN BLUR SETTINGS {{{
+    float Directions = uBlurDirections; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+    float Quality = uBlurQuality; // BLUR QUALITY (Default 4.0 - More is better but slower)
+    float Size = uBlurSize; // BLUR SIZE (Radius)
+    vec2 Radius = Size/uRez;
+    // GAUSSIAN BLUR SETTINGS }}}
 
-  vec4 initialTextureColor = texture2D(uTexture, vUv);
-  vec4 textureColor = initialTextureColor;
-
-  //Blur 1
-  vec4 bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(1.0, 1.0));
-  // float blurDelay = pow(uFadeIn, 2.);
-  
-  //Blur 2
-  for( float d=0.0; d<Pi; d+=Pi/Directions)
-  {
-  for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
+    for( float d=0.0; d<Pi; d+=Pi/Directions)
     {
-      textureColor += texture2D( uTexture, vUv+vec2(cos(d),sin(d))*Radius*i);		
+      for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
+      {
+        bluredTextureColor += texture2D( uTexture, vUv+vec2(cos(d),sin(d))*Radius*i);		
+      }
     }
-  }
-  // Output to screen
-  textureColor /= Quality * Directions - 15.0;
+    bluredTextureColor /= Quality * Directions - 15.0;
 
-  float blurDelay = pow(uFadeIn, 5.);
-  vec4 mixColor = mix(textureColor, initialTextureColor, blurDelay);
+  } else {
+    bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(uBlurX, uBlurY));
+  }
+
+  float blurDelay = pow(uFadeIn, 3.);
+  blurDelay = uBlurOnly ? 0.0 : blurDelay;
+  vec4 mixColor = mix(bluredTextureColor, textureColor, blurDelay);
+
+
 
   // vec2 displacedUv = vec2(vUv);
   // displacedUv.x += 0.1;
-  // textureColor.x = texture2D(uTexture, displacedUv); 
-
-  // textureColor.x += vPosition.x *0.01 + uShift *0.001;
-  // textureColor.y += vUv.y *0.01 + uShift *0.001;
-
-  // float position = vPosition.x;
+  // bluredTextureColor.x = texture2D(uTexture, displacedUv); 
+  // bluredTextureColor.x += vPosition.x *0.01 + uShift *0.001;
+  // bluredTextureColor.y += vUv.y *0.01 + uShift *0.001;
 
 
   gl_FragColor = vec4(mixColor.xyz * uFadeIn, uFadeOut);
-  // gl_FragColor = vec4(bluredTextureColor);
-  // gl_FragColor = vec4(vec3(uFadeIn), 1.0);
+  // gl_FragColor = vec4(blurDelay);
+  // gl_FragColor = vec4(vec3(uFadeOut), 1.0);
 }
