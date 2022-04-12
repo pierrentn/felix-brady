@@ -105,7 +105,8 @@ export default class Project {
         fadeIn = 1 - (Math.abs(distance) - 0.5) / this.apparitionDistance;
       if (this.i == 0) console.log(fadeIn);
 
-      fadeOut = (-1 * distance) / this.disparitionDistance;
+      if (this.debugObject.enableFadeOut)
+        fadeOut = (-1 * distance) / this.disparitionDistance;
     }
 
     material.uniforms.uFadeIn.value = fadeIn;
