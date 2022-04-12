@@ -42,7 +42,7 @@ vec2 Radius = Size/uRez;
   vec4 textureColor = initialTextureColor;
 
   //Blur 1
-  vec4 bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(1.0, 1.0));
+  vec4 bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(1.0));
   // float blurDelay = pow(uFadeIn, 2.);
   
   //Blur 2
@@ -56,8 +56,8 @@ vec2 Radius = Size/uRez;
   // Output to screen
   textureColor /= Quality * Directions - 15.0;
 
-  float blurDelay = pow(uFadeIn, 3.);
-  vec4 mixColor = mix(textureColor, initialTextureColor, blurDelay);
+  float blurDelay = pow(uFadeIn, 5.);
+  vec4 mixColor = mix(bluredTextureColor, initialTextureColor, blurDelay);
 
   // vec2 displacedUv = vec2(vUv);
   // displacedUv.x += 0.1;
@@ -70,6 +70,6 @@ vec2 Radius = Size/uRez;
 
 
   gl_FragColor = vec4(mixColor.xyz * uFadeIn, uFadeOut);
-  // gl_FragColor = vec4(bluredTextureColor);
+  // gl_FragColor = vec4(initialTextureColor);
   // gl_FragColor = vec4(vec3(uFadeIn), 1.0);
 }
