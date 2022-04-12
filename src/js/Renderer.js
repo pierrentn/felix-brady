@@ -36,6 +36,7 @@ export default class Renderer {
 
   setDebug() {
     this.debugFolder = this.ui.addFolder("post-processing");
+    this.debugFolder.close();
     this.debugFolder
       .add(this.debugObject, "focus", 10, 3000)
       .onChange(

@@ -34,6 +34,7 @@ export default class Camera {
   setDebug() {
     this.debugPara = document.querySelector(".debug1");
     this.debugFolder = this.ui.addFolder("Camera");
+    this.debugFolder.close();
     this.debugFolder
       .add(this.debugObject, "cameraFov", 0, 179)
       .onChange((val) => {
