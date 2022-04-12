@@ -32,9 +32,10 @@ export default class Camera {
   }
 
   setDebug() {
+    this.debugPara = document.querySelector(".debug1");
     this.debugFolder = this.ui.addFolder("Camera");
     this.debugFolder
-      .add(this.debugObject, "cameraFov", 0, 200)
+      .add(this.debugObject, "cameraFov", 0, 179)
       .onChange((val) => {
         this.instance.fov = val;
         this.instance.updateProjectionMatrix();
@@ -95,5 +96,7 @@ export default class Camera {
       this.debugObject.cameraMode === "classic"
     )
       this.instance.position.z = this.delayedScrollTop;
+    if (this.debugPara)
+      this.debugPara.innerText = this.instance.position.z.toFixed(2);
   }
 }
