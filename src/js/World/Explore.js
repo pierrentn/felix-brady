@@ -17,7 +17,7 @@ export default class Explore {
     this.debugObject = {
       enableFadeOut: true,
       enableFadeIn: true,
-      enableCircleMovement: true,
+      enableDisplacementMovement: true,
       // apparitionDistance: 2.5,
       disparitionDistance: 0.75,
       progress: 1,
@@ -29,7 +29,7 @@ export default class Explore {
       this.debugFolder = this.debug.ui.addFolder("Projects");
       this.debugFolder.add(this.debugObject, "enableFadeOut");
       this.debugFolder.add(this.debugObject, "enableFadeIn");
-      this.debugFolder.add(this.debugObject, "enableCircleMovement");
+      this.debugFolder.add(this.debugObject, "enableDisplacementMovement");
       this.debugFolder.add(this.debugObject, "progress", 0, 1).onChange(() => {
         this.projects.forEach((project) => {
           console.log(project.project.material.uniforms);
