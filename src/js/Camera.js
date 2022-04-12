@@ -17,7 +17,7 @@ export default class Camera {
     this.debugObject = {
       cameraMode: "classic",
       cameraFov: 110,
-      lerpIntensity: 0.1,
+      lerpIntensity: 0.03,
     };
 
     this.scrollTop = 0;
