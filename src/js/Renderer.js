@@ -10,6 +10,7 @@ import distorsionVertex from "../shaders/distorsion/distorsionVertex.glsl?raw";
 export default class Renderer {
   constructor() {
     this.experience = new Experience();
+    this.time = this.experience.time;
     this.canvas = this.experience.canvas;
     this.sizes = this.experience.sizes;
     this.scene = this.experience.scene;
@@ -123,6 +124,7 @@ export default class Renderer {
         tDiffuse: { value: null },
         uDistorsionAmp: { value: 1 },
         uDistorsionStr: { value: 1 },
+        uTime: { value: 0 },
       },
       fragmentShader: distorsionFragment,
       vertexShader: distorsionVertex,
@@ -153,6 +155,7 @@ export default class Renderer {
 
   update() {
     // this.instance.render(this.scene, this.camera.instance);
+    this.postProcess.distorsionPass.uniforms.uTime.value = this.time.elapsed;
     this.postProcess.composer.render(this.scene, this.camera.instance);
   }
 }
