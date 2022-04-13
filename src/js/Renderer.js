@@ -70,6 +70,13 @@ export default class Renderer {
     ) {
       this.distorsionFolder = this.debugFolder.addFolder("distorsion");
       this.distorsionFolder
+        .add(this.postProcess.distorsionPass.uniforms.uVisible, "value")
+        .name("show distorsion")
+        .onChange(
+          (val) =>
+            (this.postProcess.distorsionPass.uniforms.uVisible.value = val)
+        );
+      this.distorsionFolder
         .add(this.postProcess.distorsionPass.uniforms.uK, "value", -1, 1)
         .name("uK")
         .step(0.02)
@@ -83,33 +90,33 @@ export default class Renderer {
         .onChange(
           (val) => (this.postProcess.distorsionPass.uniforms.uKube.value = val)
         );
-      this.distorsionFolder
-        .add(
-          this.postProcess.distorsionPass.uniforms.uDistorsionAmp,
-          "value",
-          0,
-          1
-        )
-        .name("distorsion amplitude")
-        .onChange(
-          (val) =>
-            (this.postProcess.distorsionPass.uniforms.uDistorsionAmp.value =
-              val)
-        );
-      this.distorsionFolder
-        .add(
-          this.postProcess.distorsionPass.uniforms.uDistorsionStr,
-          "value",
-          1,
-          10,
-          1
-        )
-        .name("distorsion strength")
-        .onChange(
-          (val) =>
-            (this.postProcess.distorsionPass.uniforms.uDistorsionStr.value =
-              val)
-        );
+      // this.distorsionFolder
+      //   .add(
+      //     this.postProcess.distorsionPass.uniforms.uDistorsionAmp,
+      //     "value",
+      //     0,
+      //     1
+      //   )
+      //   .name("distorsion amplitude")
+      //   .onChange(
+      //     (val) =>
+      //       (this.postProcess.distorsionPass.uniforms.uDistorsionAmp.value =
+      //         val)
+      //   );
+      // this.distorsionFolder
+      //   .add(
+      //     this.postProcess.distorsionPass.uniforms.uDistorsionStr,
+      //     "value",
+      //     1,
+      //     10,
+      //     1
+      //   )
+      //   .name("distorsion strength")
+      //   .onChange(
+      //     (val) =>
+      //       (this.postProcess.distorsionPass.uniforms.uDistorsionStr.value =
+      //         val)
+      //   );
     }
   }
 
@@ -138,6 +145,7 @@ export default class Renderer {
     this.DistorsionShader = {
       uniforms: {
         tDiffuse: { value: null },
+        uVisible: { value: true },
         uDistorsionAmp: { value: 1 },
         uDistorsionStr: { value: 1 },
         uTime: { value: 0 },
