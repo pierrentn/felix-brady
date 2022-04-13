@@ -3,38 +3,46 @@ uniform sampler2D tDiffuse;
 uniform float uTime;
 uniform float uDistorsionAmp;
 uniform float uDistorsionStr;
+uniform float uK;
+uniform float uKube;
+uniform sampler2D uTexture;
 
+vec2 computeUV( vec2 uv, float k, float kcube ){
+    
+  vec2 t = uv - .5;
+  float r2 = t.x * t.x + t.y * t.y;
+	float f = 0.;
+    
+  if( kcube == 0.0){
+      f = 1. + r2 * k;
+  }else{
+      f = 1. + r2 * ( k + kcube * sqrt( r2 ) );
+  }
+  
+  vec2 nUv = f * t + .5;
+  // nUv.y = 1. - nUv.y;
+ 
+  return nUv;
+    
+}
 
 void main() {
   float amp = 0.3 + 0.2 * uDistorsionAmp;
   float strength = uDistorsionStr;
 
-
-  float center = distance(vUv, vec2(0.5));
-  center = smoothstep(amp, 1.0, center);
-  center *= strength;
+  // vec4 shiftColor = texture2D(tDiffuse, vec2(vUv.x + 0.01, vUv.y) + center * 0.33);
   
-  // vec4 color = texture2D(tDiffuse,  vUv + sin(n * 0.005 * 50.));
-  vec4 color = texture2D(tDiffuse,  vUv);
-  // vec4 shiftColor = texture2D(tDiffuse, vec2(vUv.x + 0.01, vUv.y) + center * .33);
+  float k = uK;
+  // cubic distortion value
+  float kcube = uKube;
+  vec2 nUv = computeUV(vUv, k, kcube);
+  vec4 color = texture2D(tDiffuse, vUv);
 
-  //Offset texture
-  vec4 shiftColor = texture2D(tDiffuse, vec2(vUv.x + 0.01, vUv.y) + center * 0.33);
-  // shiftColor = mix(color, shiftColor, 1.0);
+  float red = texture2D(tDiffuse, computeUV(vUv, k + sin(0.1), kcube)).r;
+  float green = texture2D(tDiffuse, computeUV(vUv, k, kcube)).g;
+  float blue = texture2D(tDiffuse, computeUV(vUv, k + sin(0.05), kcube)).b;
 
-  vec4 distoColor = texture2D(tDiffuse, vec2(vUv.x, vUv.y) + center * 0.33);
-  // distoColor.r *= shiftColor.r;
-
-  // color = vec4(shiftColor.r, color.gba);
-
-  // color = vec4(1.0 - center * snoise(color.rgb));
-
-  // color.r = mix(color.r, shiftColor, center);
-  // color = mix(color, distoColor, center);
-  color = distoColor;
-  color *= vec4(shiftColor.r, shiftColor.g * 0.95, 1.0, 1.0);
-
-  // gl_FragColor = vec4(shiftColor.r, distoColor.g, distoColor.b, 1.0);
-  gl_FragColor = vec4(color);
-  // gl_FragColor = vec4(vUv, 1.0, 1.0);
+  gl_FragColor = vec4(red, green, blue, 1.0);
+  // gl_FragColor = color;
+  // gl_FragColor = vec4(step(nUv.x, 0.5), step(nUv.y, 0.5), 1.0, 1.0);
 }
