@@ -2,8 +2,8 @@ import * as THREE from "three";
 import Experience from "../Experience";
 
 //Shaders
-import fragment from "/src/shaders/frag.glsl?raw";
-import vertex from "/src/shaders/vert.glsl?raw";
+import fragment from "/src/shaders/project/projectFragment.glsl?raw";
+import vertex from "/src/shaders/project/projectVertex.glsl?raw";
 
 let isDebugSet = false;
 export default class Project {
@@ -73,11 +73,6 @@ export default class Project {
         uBlurY: { value: this.debugObject.uBlurY },
       },
     });
-    console.log(
-      this.project.material.uniforms.uBlurDirections,
-      this.project.material.uniforms.uBlurQuality,
-      this.project.material.uniforms.uBlurSize
-    );
   }
 
   setMesh() {

@@ -36,7 +36,8 @@ float Pi = 6.28318530718; // Pi*2
 
 
 void main() {
-  vec4 textureColor = texture2D(uTexture, vUv);
+  vec4 orginalTextureColor = texture2D(uTexture, vUv);
+  vec4 textureColor = orginalTextureColor;
   vec4 bluredTextureColor;
 
   if(uBlurChoice == 0.0) {
@@ -65,7 +66,7 @@ void main() {
   blurDelay = uBlurOnly ? 0.0 : blurDelay;
   vec4 mixColor = mix(bluredTextureColor, textureColor, blurDelay);
 
-
+  // vec4 redShifted = texture2D(uTexture, vUv);
 
   // vec2 displacedUv = vec2(vUv);
   // displacedUv.x += 0.1;
@@ -73,8 +74,9 @@ void main() {
   // bluredTextureColor.x += vPosition.x *0.01 + uShift *0.001;
   // bluredTextureColor.y += vUv.y *0.01 + uShift *0.001;
 
+  // mixColor.r /= vPosition.r;
 
   gl_FragColor = vec4(mixColor.xyz * uFadeIn, uFadeOut);
-  // gl_FragColor = vec4(blurDelay);
-  // gl_FragColor = vec4(vec3(uFadeOut), 1.0);
+  // gl_FragColor = vec4(textureColor2.r, textureColor.g, textureColor.b, 1.0);
+  // gl_FragColor = vec4(vec3(vPosition), 1.0);
 }
