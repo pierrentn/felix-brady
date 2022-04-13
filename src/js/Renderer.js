@@ -7,6 +7,7 @@ import { BokehPass } from "three/examples/jsm/postprocessing/BokehPass.js";
 
 import distorsionFragment from "../shaders/distorsion/distorsionFragment.glsl?raw";
 import distorsionVertex from "../shaders/distorsion/distorsionVertex.glsl?raw";
+import { TextureLoader } from "three";
 export default class Renderer {
   constructor() {
     this.experience = new Experience();
@@ -133,6 +134,7 @@ export default class Renderer {
     );
 
     //Distortion Pass
+    const texture = new TextureLoader().load("/felix-img/1.jpg");
     this.DistorsionShader = {
       uniforms: {
         tDiffuse: { value: null },
@@ -141,6 +143,7 @@ export default class Renderer {
         uTime: { value: 0 },
         uK: { value: -0.1 },
         uKube: { value: -0.18 },
+        uTexture: { value: texture },
       },
       fragmentShader: distorsionFragment,
       vertexShader: distorsionVertex,
