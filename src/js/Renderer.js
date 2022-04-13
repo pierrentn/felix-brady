@@ -69,6 +69,20 @@ export default class Renderer {
     ) {
       this.distorsionFolder = this.debugFolder.addFolder("distorsion");
       this.distorsionFolder
+        .add(this.postProcess.distorsionPass.uniforms.uK, "value", -1, 1)
+        .name("uK")
+        .step(0.02)
+        .onChange(
+          (val) => (this.postProcess.distorsionPass.uniforms.uK.value = val)
+        );
+      this.distorsionFolder
+        .add(this.postProcess.distorsionPass.uniforms.uKube, "value", -1, 1)
+        .name("uKube")
+        .step(0.02)
+        .onChange(
+          (val) => (this.postProcess.distorsionPass.uniforms.uKube.value = val)
+        );
+      this.distorsionFolder
         .add(
           this.postProcess.distorsionPass.uniforms.uDistorsionAmp,
           "value",
@@ -125,6 +139,8 @@ export default class Renderer {
         uDistorsionAmp: { value: 1 },
         uDistorsionStr: { value: 1 },
         uTime: { value: 0 },
+        uK: { value: -0.64 },
+        uKube: { value: 0.36 },
       },
       fragmentShader: distorsionFragment,
       vertexShader: distorsionVertex,
@@ -136,7 +152,6 @@ export default class Renderer {
     this.postProcess.composer.addPass(this.postProcess.renderPass);
     // this.postProcess.composer.addPass(this.postProcess.bokehPass);
     this.postProcess.composer.addPass(this.postProcess.distorsionPass);
-
     this.postProcess.composer.setSize(this.sizes.width, this.sizes.height);
     this.postProcess.composer.setPixelRatio(
       Math.min(window.devicePixelRatio, 2)
