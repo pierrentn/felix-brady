@@ -18,6 +18,7 @@ export default class Camera {
       cameraMode: "classic",
       cameraFov: 110,
       lerpIntensity: 0.03,
+      baseCameraZ: 0.5,
     };
 
     this.scrollTop = 0;
@@ -54,7 +55,7 @@ export default class Camera {
       0.001,
       100
     );
-    this.instance.position.set(0, 0, 0);
+    this.instance.position.set(0, 0, this.debugObject.baseCameraZ);
     this.scene.add(this.instance);
   }
 
@@ -96,7 +97,8 @@ export default class Camera {
       this.debugObject.cameraMode &&
       this.debugObject.cameraMode === "classic"
     )
-      this.instance.position.z = this.delayedScrollTop;
+      this.instance.position.z =
+        this.delayedScrollTop + this.debugObject.baseCameraZ;
     if (this.debugPara)
       this.debugPara.innerText = this.instance.position.z.toFixed(2);
   }
