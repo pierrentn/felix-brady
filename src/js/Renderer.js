@@ -20,6 +20,7 @@ export default class Renderer {
     this.ui = this.debug.ui;
 
     this.debugObject = {
+      enablePost: true,
       focus: 20,
       aperture: 3,
       maxblur: 0.001,
@@ -42,6 +43,9 @@ export default class Renderer {
   setDebug() {
     this.debugFolder = this.ui.addFolder("post-processing");
     // this.debugFolder.close();
+    this.debugFolder
+      .add(this.debugObject, "enablePost")
+      .name("enable post-processing");
 
     if (this.postProcess.composer.passes.includes(this.postProcess.bokehPass)) {
       this.debugFolder
@@ -180,8 +184,12 @@ export default class Renderer {
   }
 
   update() {
-    // this.instance.render(this.scene, this.camera.instance);
     this.postProcess.distorsionPass.uniforms.uTime.value = this.time.elapsed;
-    this.postProcess.composer.render(this.scene, this.camera.instance);
+
+    if (this.debugObject.enablePost) {
+      this.postProcess.composer.render(this.scene, this.camera.instance);
+    } else {
+      this.instance.render(this.scene, this.camera.instance);
+    }
   }
 }
