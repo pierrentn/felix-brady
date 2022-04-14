@@ -1,8 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-
 import Experience from "./Experience";
-import { lerp } from "./Utils/Maths";
 
 export default class Camera {
   constructor() {
@@ -12,24 +10,17 @@ export default class Camera {
     this.ui = this.debug.ui;
     this.scene = this.experience.scene;
     this.canvas = this.experience.canvas;
-    this.scroll = this.experience.scroll.instance;
+    this.scroll = this.experience.scroll;
 
     this.debugObject = {
       cameraMode: "classic",
       cameraFov: 110,
-      lerpIntensity: 0.03,
       baseCameraZ: 0.5,
     };
-
-    this.scrollTop = 0;
-    this.delayedScrollTop = 0;
 
     this.setInstance();
     if (this.debugObject.cameraMode === "debug") this.setControls();
     if (this.debug.active) this.setDebug();
-    this.scroll.on((e) => {
-      this.updatePosition(e);
-    });
   }
 
   setDebug() {
@@ -42,7 +33,6 @@ export default class Camera {
         this.instance.fov = val;
         this.instance.updateProjectionMatrix();
       });
-    this.debugFolder.add(this.debugObject, "lerpIntensity", 0.01, 1);
     this.debugFolder
       .add(this.debugObject, "cameraMode", ["classic", "debug"])
       .onChange((val) => this.switchCameraMode(val));
@@ -87,18 +77,12 @@ export default class Camera {
     if (this.debugObject.cameraMode && this.debugObject.cameraMode === "debug")
       this.controls.update();
 
-    this.delayedScrollTop = lerp(
-      this.delayedScrollTop,
-      this.scrollTop,
-      this.debugObject.lerpIntensity
-    );
-
     if (
       this.debugObject.cameraMode &&
       this.debugObject.cameraMode === "classic"
     )
       this.instance.position.z =
-        this.delayedScrollTop + this.debugObject.baseCameraZ;
+        this.scroll.delayedScrollTop + this.debugObject.baseCameraZ;
     if (this.debugPara)
       this.debugPara.innerText = this.instance.position.z.toFixed(2);
   }
