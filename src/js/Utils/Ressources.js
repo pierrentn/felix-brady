@@ -25,6 +25,7 @@ export default class Ressources extends EventEmitter {
       if (source.type === "texture") {
         source.path.forEach((texture, index) => {
           this.toLoad++;
+          //TODO project inside one obj
           this.loaders.textureLoaders.load(texture, (file) => {
             this.sourceLoaded(index, source, file);
           });
@@ -33,6 +34,7 @@ export default class Ressources extends EventEmitter {
     }
   }
 
+  //* index, temporary solution,
   sourceLoaded(index, source, file) {
     this.items.push({ index, texture: file });
     this.loaded++;
