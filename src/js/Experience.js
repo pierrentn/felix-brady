@@ -46,6 +46,7 @@ export default class Experience {
   update() {
     if (this.debug.active) this.debug.statsBegin();
     this.mouse.update();
+    this.scroll.update();
     this.camera.update();
     this.world.update();
     this.renderer.update();
