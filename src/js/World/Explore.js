@@ -5,10 +5,13 @@ import Project from "./Project";
 export default class Explore {
   constructor() {
     this.experience = new Experience();
+    this.camera = this.experience.camera.instance;
+    this.scroll = this.experience.scroll;
     this.mouse = this.experience.mouse;
     this.debug = this.experience.debug;
     this.scene = this.experience.scene;
     this.ressources = this.experience.ressources;
+    this.currentProjectIndex = 0;
 
     this.setGroup();
   }
@@ -125,8 +128,76 @@ export default class Explore {
     });
   }
 
+  copyProject() {
+    const index = this.currentProjectIndex % this.ressources.items.length;
+    console.log(index);
+    let copyProject = this.ressources.items[0];
+    for (const a of this.projects) {
+      console.log(a);
+      if (a.project.index === this.currentProjectIndex) {
+        copyProject = a.project;
+      }
+    }
+    copyProject.index =
+      this.currentProjectIndex + this.ressources.items.length - 1;
+    // console.log(copyProject.index);
+    this.projects.push(new Project(copyProject, this));
+  }
+  //-1 on recule 1 on avance
+  moveProject() {
+    let indexProjectToMove;
+    let newPosition;
+    if (this.scroll.scrollDir === 1) {
+      const index = (this.currentProjectIndex - 2) % this.projects.length;
+      // console.log("move forward", index);
+      for (const a of this.projects) {
+        if (a.project.index === index) {
+          a.project.mesh.position.z -= this.ressources.items.length;
+          console.log(a.project.index, "moved forward");
+        }
+      }
+    }
+    if (this.scroll.scrollDir === -1) {
+      const index = (this.currentProjectIndex - 1) % this.projects.length;
+      // console.log("move backward", index);
+      for (const a of this.projects) {
+        if (a.project.index === index) {
+          console.log(a.project.index);
+          a.project.mesh.position.z += this.ressources.items.length;
+          console.log(a.project.index, "moved backward");
+        }
+      }
+    }
+
+    // for (const a of this.projects) {
+    //   console.log(a);
+    //   if (a.project.index === index) {
+    //     a.project.mesh.position.z -= this.ressources.items.length;
+    //   }
+    // }
+    // //math min max
+    // const index =
+    //   (this.currentProjectIndex - 1 * direction) % this.projects.length;
+    // console.log(index);
+    // for (const a of this.projects) {
+    //   console.log(a);
+    //   if (a.project.index === index) {
+    //     a.project.mesh.position.z -= this.ressources.items.length;
+    //   }
+    // }
+  }
+
   update() {
     this.group.position.x = this.mouse.delayedMousePos.x * 0.1;
     this.group.position.y = this.mouse.delayedMousePos.y * 0.1;
+
+    let TmpCurrentProjectIndex = Math.ceil(this.camera.position.z * -1) - 1;
+    TmpCurrentProjectIndex =
+      TmpCurrentProjectIndex <= 0 ? 0 : TmpCurrentProjectIndex;
+    // console.log(TmpCurrentProjectIndex);
+    if (TmpCurrentProjectIndex != this.currentProjectIndex) {
+      this.currentProjectIndex = TmpCurrentProjectIndex;
+      this.moveProject();
+    }
   }
 }

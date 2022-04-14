@@ -7,9 +7,8 @@ import vertex from "/src/shaders/project/projectVertex.glsl?raw";
 
 let isDebugSet = false;
 export default class Project {
-  constructor(project, explore) {
-    this.debugObject = explore.debugObject;
-
+  constructor(project, exploreInstance) {
+    this.debugObject = exploreInstance.debugObject;
     //Params
     this.project = {};
     this.project.index = project.index;
@@ -18,7 +17,7 @@ export default class Project {
 
     //Classes
     this.experience = new Experience();
-    this.explore = explore;
+    this.explore = exploreInstance;
     this.world = this.experience.world;
     this.sizes = this.experience.sizes;
     this.scene = this.experience.scene;
@@ -86,7 +85,9 @@ export default class Project {
   setPosition() {
     const xPosition = 0;
     const yPosition = 0;
+    //TODO Add tweak
     const zPosition = this.project.indexOffset * -1;
+    console.log(zPosition);
     this.project.mesh.position.set(xPosition, yPosition, zPosition);
     this.project.mesh.scale.set(
       this.scaleFactor,
