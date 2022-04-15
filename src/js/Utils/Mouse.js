@@ -8,10 +8,20 @@ export default class Mouse extends EventEmitter {
     this.experience = new Experience();
     this.sizes = this.experience.sizes;
 
+    this.debugObject = {
+      lerpIntensity: 0.05,
+    };
     this.mousePos = { x: 0, y: 0 };
     this.delayedMousePos = { x: 0, y: 0 };
 
     window.addEventListener("mousemove", (e) => this.setMouse(e));
+    if (this.debug.active) this.setDebug();
+  }
+
+  setDebug() {
+    this.debugFolder = this.debug.ui.addFolder("Mouse");
+    this.debugFolder.close();
+    this.debugFolder.add(this.debugObject, "lerpIntensity", 0, 0.5);
   }
 
   setMouse(e) {
@@ -23,12 +33,12 @@ export default class Mouse extends EventEmitter {
     this.delayedMousePos.x = lerp(
       this.delayedMousePos.x,
       this.mousePos.x,
-      0.05
+      this.debugObject.lerpIntensity
     );
     this.delayedMousePos.y = lerp(
       this.delayedMousePos.y,
       this.mousePos.y,
-      0.05
+      this.debugObject.lerpIntensity
     );
   }
 }
