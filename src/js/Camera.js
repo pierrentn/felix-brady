@@ -19,6 +19,7 @@ export default class Camera {
     };
 
     this.setInstance();
+    this.calcVisibleSize();
     if (this.debugObject.cameraMode === "debug") this.setControls();
     if (this.debug.active) this.setDebug();
   }
@@ -47,6 +48,33 @@ export default class Camera {
     );
     this.instance.position.set(0, 0, this.debugObject.baseCameraZ);
     this.scene.add(this.instance);
+  }
+
+  calcVisibleSize() {
+    this.visibleSize = {};
+    let depth = -1;
+
+    //https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
+    this.visibleSize.height = this.calcHeight(depth);
+    this.visibleSize.width = this.calcWidth();
+  }
+
+  calcHeight(depth) {
+    // compensate for cameras not positioned at z=0
+    const cameraOffset = this.instance.position.z;
+    if (depth < cameraOffset) depth -= cameraOffset;
+    else depth += cameraOffset;
+
+    // vertical fov in radians
+    const vFOV = (this.instance.fov * Math.PI) / 180;
+
+    // Math.abs to ensure the result is always positive
+    return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
+  }
+
+  calcWidth() {
+    const height = this.visibleSize.height;
+    return height * this.instance.aspect;
   }
 
   setControls() {
