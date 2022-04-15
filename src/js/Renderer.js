@@ -88,7 +88,7 @@ export default class Renderer {
           (val) => (this.postProcess.distorsionPass.uniforms.uK.value = val)
         );
       this.distorsionFolder
-        .add(this.postProcess.distorsionPass.uniforms.uKube, "value", -1, 1)
+        .add(this.postProcess.distorsionPass.uniforms.uKube, "value", -1, 0)
         .name("uKube")
         .step(0.02)
         .onChange(
