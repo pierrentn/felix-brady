@@ -7,6 +7,8 @@ export default class Camera {
     this.experience = new Experience();
     this.sizes = this.experience.sizes;
     this.debug = this.experience.debug;
+    this.time = this.experience.time;
+    this.mouse = this.experience.mouse;
     this.ui = this.debug.ui;
     this.scene = this.experience.scene;
     this.canvas = this.experience.canvas;
@@ -14,7 +16,7 @@ export default class Camera {
 
     this.debugObject = {
       cameraMode: "classic",
-      cameraFov: 110,
+      cameraFov: 100,
       baseCameraZ: 0.5,
     };
 
@@ -79,11 +81,15 @@ export default class Camera {
 
   setControls() {
     this.controls = new OrbitControls(this.instance, this.canvas);
+    // this.controls.autoRotate = true;
+    // this.controls.target = new THREE.Vector3(1, 0, 2);
     this.controls.enableDamping = true;
+    // this.controls.zoomSpeed = 0.1;
   }
 
   switchCameraMode(mode) {
     if (mode === "debug") {
+      this.instance.position.set(-2, 0, this.debugObject.baseCameraZ);
       this.setControls();
     } else {
       this.controls == null;
@@ -104,6 +110,9 @@ export default class Camera {
   update() {
     if (this.debugObject.cameraMode && this.debugObject.cameraMode === "debug")
       this.controls.update();
+
+    this.instance.rotation.x = this.mouse.mouseRotation.x;
+    this.instance.rotation.y = this.mouse.mouseRotation.y;
 
     if (
       this.debugObject.cameraMode &&

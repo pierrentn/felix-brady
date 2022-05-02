@@ -8,8 +8,10 @@ export default class Scroll {
     this.debug = this.experience.debug;
 
     this.debugObject = {
-      mouseMultiplier: 0.0001,
+      // mouseMultiplier: 0.0001,
+      mouseMultiplier: 0.0003,
       lerpIntensity: 0.03,
+      // lerpIntensity: 1,
     };
 
     //1 : forward in gallery, -1 backward in gallery

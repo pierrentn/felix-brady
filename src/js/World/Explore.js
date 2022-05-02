@@ -1,11 +1,12 @@
 import * as THREE from "three";
+import gsap from "gsap";
 import Experience from "../Experience";
 import Project from "./Project";
 
 export default class Explore {
   constructor() {
     this.experience = new Experience();
-    this.camera = this.experience.camera.instance;
+    this.camera = this.experience.camera;
     this.scroll = this.experience.scroll;
     this.mouse = this.experience.mouse;
     this.debug = this.experience.debug;
@@ -14,13 +15,14 @@ export default class Explore {
     this.currentProjectIndex = 0;
 
     this.setGroup();
+    // this.scroll.instance.on(() => this.getCurrentProject());
   }
 
   setDebug() {
     this.debugObject = {
       enableFadeOut: true,
       enableFadeIn: true,
-      enableDisplacementMovement: true,
+      enableDisplacementMovement: false,
       // apparitionDistance: 2.5,
       disparitionDistance: 0.75,
       progress: 1,
@@ -144,29 +146,47 @@ export default class Explore {
     this.projects.push(new Project(copyProject, this));
   }
   //-1 on recule 1 on avance
-  moveProject() {
+  moveProject(scrollDirection) {
     let indexProjectToMove;
     let newPosition;
-    if (this.scroll.scrollDir === 1) {
+    if (scrollDirection === 1) {
       const index = (this.currentProjectIndex - 2) % this.projects.length;
       // console.log("move forward", index);
       for (const a of this.projects) {
         if (a.project.index === index) {
+          // gsap.to(a.project.mesh.position, {
+          //   z: a.project.mesh.position.z - this.ressources.items.length,
+          //   duration: 1,
+          // });
           a.project.mesh.position.z -= this.ressources.items.length;
-          console.log(a.project.index, "moved forward");
+          // console.log(
+          //   a.project.index,
+          //   "moved forward",
+          //   a.project.mesh.position.z
+          // );
         }
       }
-    }
-    if (this.scroll.scrollDir === -1) {
+    } else if (scrollDirection === -1) {
       const index = (this.currentProjectIndex - 1) % this.projects.length;
       // console.log("move backward", index);
       for (const a of this.projects) {
         if (a.project.index === index) {
-          console.log(a.project.index);
+          // gsap.to(a.project.mesh.position, {
+          //   z: a.project.mesh.position.z + this.ressources.items.length,
+          //   duration: 1,
+          // });
           a.project.mesh.position.z += this.ressources.items.length;
-          console.log(a.project.index, "moved backward");
+          // console.log(a.project.index, "moved backward");
+          if (
+            a.project.mesh.position.z % this.projects.length !==
+            a.project.indexOffset * -1
+          ) {
+            // console.log(a.project.mesh.position.z, a.project.index);
+          }
         }
       }
+    } else {
+      console.log("wtf bro");
     }
 
     // for (const a of this.projects) {
@@ -187,17 +207,27 @@ export default class Explore {
     // }
   }
 
-  update() {
-    this.group.position.x = this.mouse.delayedMousePos.x * 0.1;
-    this.group.position.y = this.mouse.delayedMousePos.y * 0.1;
-
-    let TmpCurrentProjectIndex = Math.ceil(this.camera.position.z * -1) - 1;
+  getCurrentProject() {
+    let TmpCurrentProjectIndex =
+      Math.ceil(this.camera.instance.position.z * -1) - 1;
     TmpCurrentProjectIndex =
       TmpCurrentProjectIndex <= 0 ? 0 : TmpCurrentProjectIndex;
     // console.log(TmpCurrentProjectIndex);
     if (TmpCurrentProjectIndex != this.currentProjectIndex) {
       this.currentProjectIndex = TmpCurrentProjectIndex;
-      this.moveProject();
+      console.log(
+        "--------------",
+        this.currentProjectIndex,
+        this.scroll.scrollDir
+      );
+      // console.log(TmpCurrentProjectIndex);
+      this.moveProject(this.scroll.scrollDir);
     }
+  }
+
+  update() {
+    // this.group.position.x = this.mouse.delayedMousePos.x * 0.4;
+    // this.group.position.y = this.mouse.delayedMousePos.y * 0.4;
+    this.getCurrentProject();
   }
 }

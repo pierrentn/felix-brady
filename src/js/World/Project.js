@@ -19,6 +19,7 @@ export default class Project {
     this.experience = new Experience();
     this.explore = exploreInstance;
     this.world = this.experience.world;
+    this.mouse = this.experience.mouse;
     this.sizes = this.experience.sizes;
     this.scene = this.experience.scene;
     this.ressources = this.experience.ressources;
@@ -26,11 +27,13 @@ export default class Project {
     this.time = this.experience.time;
 
     //Settings
-    this.baseAngle = -Math.PI / 2;
-    this.angle = this.baseAngle + Math.PI * this.project.index;
-    this.scaleFactor = 1.3;
+    this.baseAngle = Math.PI / 2;
+    this.angle = (Math.PI / 2) * this.project.index;
+    // this.baseAngle = -Math.PI / 2;
+    // this.angle = this.baseAngle + Math.PI * this.project.index;
+    this.scaleFactor = 0.7;
     //base apparition dist
-    this.apparitionDistance = 2.5;
+    this.apparitionDistance = 7.5;
     //end fade in dist
     this.fullFadeInDist = 0.5;
     //define start dist of fade out
@@ -71,6 +74,7 @@ export default class Project {
         uBlurX: { value: this.debugObject.uBlurX },
         uBlurY: { value: this.debugObject.uBlurY },
       },
+      side: THREE.DoubleSide,
     });
   }
 
@@ -83,16 +87,39 @@ export default class Project {
   }
 
   setPosition() {
-    const xPosition = 0;
-    const yPosition = 0;
+    this.maxWidth =
+      this.camera.visibleSize.width / 2 -
+      this.project.geometry.parameters.width;
+    this.maxHeight =
+      this.camera.visibleSize.height / 2 -
+      this.project.geometry.parameters.height;
+    // const xPosition = 0;
+    // const yPosition = 0;
+    const randX = (Math.random() - 0.5) * 2;
+    const randY = (Math.random() - 0.5) * 2;
+    // this.xPosition = 1.5 * rand;
+    this.xPosition = randX * this.maxWidth;
+    // this.xPosition = (Math.random() - 0.5) * 2 * 0.5;
+    this.yPosition = randY * this.maxHeight;
+    // this.yPosition = (Math.random() - 0.5) * 2 * 1;
+
     //TODO Add tweak
-    const zPosition = this.project.indexOffset * -1;
-    console.log(zPosition);
-    this.project.mesh.position.set(xPosition, yPosition, zPosition);
+    const zPosition = this.project.indexOffset * 0.5 * -1;
+
+    this.project.mesh.position.set(this.xPosition, this.yPosition, zPosition);
+    if (this.project.index % 2 == 0) {
+      this.project.mesh.position.x += 0.25;
+      this.project.mesh.position.y += 0.25;
+    }
     this.project.mesh.scale.set(
       this.scaleFactor,
       this.scaleFactor,
       this.scaleFactor
+    );
+    this.project.mesh.rotation.set(
+      (this.yPosition / this.maxHeight) * 0.1,
+      ((this.xPosition * -1) / this.maxWidth) * 0.3,
+      0
     );
   }
 
@@ -100,6 +127,10 @@ export default class Project {
 
   update() {
     const { mesh, material } = this.project;
+
+    // mesh.rotation.copy(this.camera.instance.rotation);
+    mesh.rotation.x = this.mouse.mouseRotation.x;
+    mesh.rotation.y = this.mouse.mouseRotation.y;
 
     let fadeIn = this.debugObject.enableFadeIn ? 0 : 1;
     let fadeOut = 1;
@@ -115,8 +146,10 @@ export default class Project {
 
       //TODO Make it depending view size
       if (this.debugObject.enableDisplacementMovement) {
-        mesh.position.x = Math.sin(this.angle) * (1.5 - distance);
-        mesh.position.y = Math.cos(this.angle) * (1.5 - distance);
+        mesh.position.x =
+          this.xPosition + Math.sin(this.angle) * (1.5 - distance);
+        mesh.position.y =
+          this.yPosition + Math.cos(this.angle) * (1.5 - distance);
       }
 
       if (this.debugObject.enableFadeIn)
