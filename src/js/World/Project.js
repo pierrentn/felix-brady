@@ -95,8 +95,8 @@ export default class Project {
       this.project.geometry.parameters.height;
     // const xPosition = 0;
     // const yPosition = 0;
-    const randX = (Math.random() - 0.5) * 2;
-    const randY = (Math.random() - 0.5) * 2;
+    const randX = (Math.random() - 0.5) * 2.5;
+    const randY = (Math.random() - 0.5) * 2.5;
     // this.xPosition = 1.5 * rand;
     this.xPosition = randX * this.maxWidth;
     // this.xPosition = (Math.random() - 0.5) * 2 * 0.5;
@@ -104,12 +104,12 @@ export default class Project {
     // this.yPosition = (Math.random() - 0.5) * 2 * 1;
 
     //TODO Add tweak
-    const zPosition = this.project.indexOffset * 0.5 * -1;
+    const zPosition = this.project.indexOffset * -1;
 
     this.project.mesh.position.set(this.xPosition, this.yPosition, zPosition);
     if (this.project.index % 2 == 0) {
-      this.project.mesh.position.x += 0.25;
-      this.project.mesh.position.y += 0.25;
+      this.project.mesh.position.x += 0.5;
+      this.project.mesh.position.y += 0.5;
     }
     this.project.mesh.scale.set(
       this.scaleFactor,

@@ -185,8 +185,6 @@ export default class Explore {
           }
         }
       }
-    } else {
-      console.log("wtf bro");
     }
 
     // for (const a of this.projects) {
