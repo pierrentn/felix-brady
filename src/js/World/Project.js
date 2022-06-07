@@ -33,7 +33,7 @@ export default class Project {
     // this.angle = this.baseAngle + Math.PI * this.project.index;
     this.scaleFactor = 0.7;
     //base apparition dist
-    this.apparitionDistance = 7.5;
+    this.apparitionDistance = 10.5;
     //end fade in dist
     this.fullFadeInDist = 0.5;
     //define start dist of fade out
@@ -123,8 +123,6 @@ export default class Project {
     );
   }
 
-  //TODO Make full visibility interval clearer
-
   update() {
     const { mesh, material } = this.project;
 
@@ -160,22 +158,9 @@ export default class Project {
       this.isTriggered = [false, distance];
     }
 
-    if (this.project.index == 0) {
-      // console.log("------------------------");
-      // console.log("fadeOut", fadeOut.toFixed(2));
-      // // console.log("fadeIn", fadeIn.toFixed(2));
-      // console.log("distance", distance);
-    }
-
     //Update project uniforms
     material.uniforms.uFadeIn.value = fadeIn;
     material.uniforms.uFadeOut.value = fadeOut;
     material.uniforms.uTime.value = this.time.elapsed;
   }
 }
-
-/**
- * 1 - x / 2.5 = 1
- * x / 2.5 = 0
- * x = 0
- */

@@ -56,7 +56,6 @@ export default class Camera {
     this.visibleSize = {};
     let depth = -1;
 
-    //https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
     this.visibleSize.height = this.calcHeight(depth);
     this.visibleSize.width = this.calcWidth();
   }

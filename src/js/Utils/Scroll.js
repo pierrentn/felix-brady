@@ -9,8 +9,8 @@ export default class Scroll {
 
     this.debugObject = {
       // mouseMultiplier: 0.0001,
-      mouseMultiplier: 0.0003,
-      lerpIntensity: 0.03,
+      mouseMultiplier: 0.0009,
+      lerpIntensity: 0.1,
       // lerpIntensity: 1,
     };
 

@@ -62,7 +62,7 @@ void main() {
     bluredTextureColor = blur13(uTexture, vUv, uRez, vec2(uBlurX, uBlurY));
   }
 
-  float blurDelay = pow(uFadeIn, 3.);
+  float blurDelay = pow(uFadeIn, 5.);
   blurDelay = uBlurOnly ? 0.0 : blurDelay;
   vec4 mixColor = mix(bluredTextureColor, textureColor, blurDelay);
 

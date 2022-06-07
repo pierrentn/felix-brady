@@ -30,7 +30,7 @@ export default class Explore {
       uBlurChoice: 0,
       uBlurDirections: 16,
       uBlurQuality: 4,
-      uBlurSize: 16,
+      uBlurSize: 32,
       uBlurX: 7,
       uBlurY: 7,
     };
@@ -43,7 +43,6 @@ export default class Explore {
       this.debugFolder.add(this.debugObject, "enableDisplacementMovement");
       this.debugFolder.add(this.debugObject, "progress", 0, 1).onChange(() => {
         this.projects.forEach((project) => {
-          console.log(project.project.material.uniforms);
           project.project.material.uniforms.uProgress.value =
             this.debugObject.progress;
         });
@@ -130,79 +129,23 @@ export default class Explore {
     });
   }
 
-  copyProject() {
-    const index = this.currentProjectIndex % this.ressources.items.length;
-    console.log(index);
-    let copyProject = this.ressources.items[0];
-    for (const a of this.projects) {
-      console.log(a);
-      if (a.project.index === this.currentProjectIndex) {
-        copyProject = a.project;
-      }
-    }
-    copyProject.index =
-      this.currentProjectIndex + this.ressources.items.length - 1;
-    // console.log(copyProject.index);
-    this.projects.push(new Project(copyProject, this));
-  }
   //-1 on recule 1 on avance
   moveProject(scrollDirection) {
-    let indexProjectToMove;
-    let newPosition;
     if (scrollDirection === 1) {
       const index = (this.currentProjectIndex - 2) % this.projects.length;
-      // console.log("move forward", index);
       for (const a of this.projects) {
         if (a.project.index === index) {
-          // gsap.to(a.project.mesh.position, {
-          //   z: a.project.mesh.position.z - this.ressources.items.length,
-          //   duration: 1,
-          // });
           a.project.mesh.position.z -= this.ressources.items.length;
-          // console.log(
-          //   a.project.index,
-          //   "moved forward",
-          //   a.project.mesh.position.z
-          // );
         }
       }
     } else if (scrollDirection === -1) {
       const index = (this.currentProjectIndex - 1) % this.projects.length;
-      // console.log("move backward", index);
       for (const a of this.projects) {
         if (a.project.index === index) {
-          // gsap.to(a.project.mesh.position, {
-          //   z: a.project.mesh.position.z + this.ressources.items.length,
-          //   duration: 1,
-          // });
           a.project.mesh.position.z += this.ressources.items.length;
-          // console.log(a.project.index, "moved backward");
-          if (
-            a.project.mesh.position.z % this.projects.length !==
-            a.project.indexOffset * -1
-          ) {
-            // console.log(a.project.mesh.position.z, a.project.index);
-          }
         }
       }
     }
-
-    // for (const a of this.projects) {
-    //   console.log(a);
-    //   if (a.project.index === index) {
-    //     a.project.mesh.position.z -= this.ressources.items.length;
-    //   }
-    // }
-    // //math min max
-    // const index =
-    //   (this.currentProjectIndex - 1 * direction) % this.projects.length;
-    // console.log(index);
-    // for (const a of this.projects) {
-    //   console.log(a);
-    //   if (a.project.index === index) {
-    //     a.project.mesh.position.z -= this.ressources.items.length;
-    //   }
-    // }
   }
 
   getCurrentProject() {
@@ -210,22 +153,13 @@ export default class Explore {
       Math.ceil(this.camera.instance.position.z * -1) - 1;
     TmpCurrentProjectIndex =
       TmpCurrentProjectIndex <= 0 ? 0 : TmpCurrentProjectIndex;
-    // console.log(TmpCurrentProjectIndex);
     if (TmpCurrentProjectIndex != this.currentProjectIndex) {
       this.currentProjectIndex = TmpCurrentProjectIndex;
-      console.log(
-        "--------------",
-        this.currentProjectIndex,
-        this.scroll.scrollDir
-      );
-      // console.log(TmpCurrentProjectIndex);
       this.moveProject(this.scroll.scrollDir);
     }
   }
 
   update() {
-    // this.group.position.x = this.mouse.delayedMousePos.x * 0.4;
-    // this.group.position.y = this.mouse.delayedMousePos.y * 0.4;
     this.getCurrentProject();
   }
 }
