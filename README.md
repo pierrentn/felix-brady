@@ -1,6 +1,6 @@
 # Felix Brady
 
-preview : https://felix-brady.netlify.app 
+https://felixbrady.pierrenottin.com/
 
 ```bash
 # Install dependencies (only the first time)
